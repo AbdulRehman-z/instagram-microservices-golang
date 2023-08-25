@@ -33,3 +33,5 @@ router.post(
     }
   }
 );
+
+export { router as signUpRouter };
