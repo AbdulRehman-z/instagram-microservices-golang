@@ -1,16 +1,17 @@
 import express, { Request, Response, NextFunction } from "express";
 import { supabase } from "../services/supabase.service";
 import { BadRequestError } from "@underthehoodjs/commonjs";
+
 const router = express.Router();
 
 router.post(
-  "/api/users/forgot-password",
+  "/api/users/update-password",
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { email } = req.body;
+      const { password } = req.body;
 
-      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: "http://insta.dev/api/users/update-password",
+      const { data, error } = await supabase.auth.updateUser({
+        password: password,
       });
 
       if (error) {
@@ -24,4 +25,4 @@ router.post(
   }
 );
 
-export { router as forgotPasswordRouter };
+export { router as updatePasswordRouter };
