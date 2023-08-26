@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: abdulrehmanconqueror/auth
+          image: abdulrehmanconq/auth-service
           ports:
             - containerPort: 3000
           env:

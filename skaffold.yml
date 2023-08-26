@@ -8,7 +8,7 @@ build:
   local:
     push: false
   artifacts:
-    - image: abdulrehmanconq/auth
+    - image: abdulrehmanconq/auth-service
       context: auth-service
       docker:
         dockerfile: Dockerfile
