@@ -13,7 +13,7 @@ spec:
         component: auth-service
     spec:
       containers:
-        - name: auth
+        - name: auth-service
           image: abdulrehmanconq/auth-service
           ports:
             - containerPort: 3000
@@ -21,9 +21,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-cluster-ip-service
+  name: auth-service
 spec:
-  type: ClusterIP
   selector:
     component: auth-service
   ports:

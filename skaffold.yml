@@ -16,5 +16,5 @@ build:
         manual:
           - src: "src/**/*.ts"
             dest: .
-          - src: "prisma/**/*.ts"
+          - src: "prisma/**/*.prisma"
             dest: .

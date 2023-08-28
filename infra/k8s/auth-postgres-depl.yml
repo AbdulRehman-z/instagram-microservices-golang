@@ -13,16 +13,16 @@ spec:
         component: auth-postgres-service
     spec:
       volumes:
-        - name: auth-postgres-storage
+        - name: database-storage
           persistentVolumeClaim:
-            claimName: auth-postgres-pvc
+            claimName: database-pvc
       containers:
         - name: auth-postgres-service
           image: postgres:alpine
           ports:
             - containerPort: 5432
           volumeMounts:
-            - name: auth-postgres-storage
+            - name: database-storage
               mountPath: /var/lib/postgresql/data
               subPath: postgres
           env:
@@ -35,9 +35,8 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: auth-postgres-cluster-ip-service
+  name: auth-postgres-service
 spec:
-  type: ClusterIP
   selector:
     component: auth-postgres-service
   ports:
