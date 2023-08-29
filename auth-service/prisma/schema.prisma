@@ -14,4 +14,7 @@ model User {
   id       Int    @id @default(autoincrement())
   email    String @db.VarChar(100)
   password String @db.VarChar(10)
+
+  @@unique([email])
+  @@index([email])
 }
