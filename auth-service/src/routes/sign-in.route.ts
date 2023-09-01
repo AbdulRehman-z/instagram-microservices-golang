@@ -1,7 +1,7 @@
 import express, { Request, Response, NextFunction } from "express";
 import { BadRequestError, NotFoundError } from "@underthehoodjs/commonjs";
 import { prisma } from "../services/prisma.service";
-import { Password } from "../services/hashing-service";
+import { Password } from "../services/hashing.service";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();

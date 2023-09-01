@@ -10,7 +10,7 @@ export class Password {
     const salt = crypto.randomBytes(32).toString("hex");
 
     const genHash = crypto
-      .pbkdf2Sync(password, salt, 10000, 64, "sha512")
+      .pbkdf2Sync(password, salt, 10000, 64, "sha256")
       .toString("hex");
 
     return `${genHash}.${salt}`;
@@ -25,9 +25,18 @@ export class Password {
     const [hashedPassword, salt] = storedPassword.split(".");
 
     const hashVerify = crypto
-      .pbkdf2Sync(password, salt, 10000, 64, "sha512")
+      .pbkdf2Sync(password, salt, 10000, 64, "sha256")
       .toString("hex");
 
     return hashVerify === hashedPassword;
+  }
+
+  // generateResetToken
+  /**
+   * This function generates a random token for the user to use to reset their password
+   */
+
+  static generateResetToken() {
+    return crypto.randomBytes(32).toString("hex");
   }
 }
