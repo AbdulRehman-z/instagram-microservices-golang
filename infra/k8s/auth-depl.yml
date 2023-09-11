@@ -6,22 +6,23 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      component: auth
+      component: auth-service
   template:
     metadata:
       labels:
-        component: auth
+        component: auth-service
     spec:
       containers:
-        - name: auth
+        - name: auth-service
           image: abdulrehmanconq/auth-service
           ports:
             - containerPort: 3000
           env:
-            - name: SUPABASE_URL
-              value: https://tyvfcvzhckirmlssnedd.supabase.co
-            - name: SUPABASE_ANNON_KEY
-              value: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR5dmZjdnpoY2tpcm1sc3NuZWRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTI5NzEwOTQsImV4cCI6MjAwODU0NzA5NH0.HQW7rnzKgVb6Q95GxHYlbtipYpCryWu8wuPj54XKEh0
+            - name: JWT_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: jwt-secret
+                  key: JWT_KEY
 ---
 apiVersion: v1
 kind: Service
@@ -29,9 +30,9 @@ metadata:
   name: auth-service
 spec:
   selector:
-    component: auth
+    component: auth-service
   ports:
-    - name: auth
+    - name: auth-service
       protocol: TCP
       port: 3000
       targetPort: 3000
