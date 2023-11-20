@@ -1,0 +1,153 @@
+version: '3'
+
+services:
+
+  #### The Auth Service ####
+  auth_service:
+    build: ../auth_service/Dockerfile
+    ports:
+      - "5000:5000"
+    restart: always  
+    depends_on:
+      - auth_service_db  
+    environment:
+       DSN: "host=auth_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  auth_service_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always  
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: auth_service_db
+
+  # ### The User Profile Service ###
+  # user_profile_service:
+  #   build: ../user_profile_service/Dockerfile
+  #   ports:
+  #     - "5001:5001"
+  #   restart: always
+  #   depends_on:
+  #     - user_profile_service_db
+  #   environment:
+  #      DSN: "host=user_profile_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  # user_profile_service_db:
+  #   image: postgres:alpine3.18
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always
+  #   environment:
+  #      POSTGRES_USER: postgres
+  #      POSTGRES_PASSWORD: postgres
+  #      POSTGRES_DB: user_profile_service_db
+
+  # ### The Comments Service ###
+  # comments_service:
+  #   build: ../comments_service/Dockerfile
+  #   ports:
+  #     - "5002:5002"
+  #   restart: always
+  #   depends_on:
+  #     - comments_service_db
+  #   environment:
+  #      DSN: "host=comments_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5" 
+
+  # comments_service_db:
+  #   image: postgres:alpine3.18
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always
+  #   environment:
+  #      POSTGRES_USER: postgres
+  #      POSTGRES_PASSWORD: postgres
+  #      POSTGRES_DB: comments_service_db 
+
+  # ### The Posts Service ###
+  # posts_service:
+  #   build: ../posts_service/Dockerfile
+  #   ports:
+  #     - "5003:5003"
+  #   restart: always
+  #   depends_on:
+  #     - posts_service_db
+  #   environment:
+  #      DSN: "host=posts_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  # posts_service_db:
+  #   image: postgres:alpine3.18
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always
+  #   environment:
+  #      POSTGRES_USER: postgres
+  #      POSTGRES_PASSWORD: postgres
+  #      POSTGRES_DB: posts_service_db
+
+  # # TODO: Add the Feed Service
+  # ### The Feed Service ### 
+
+  # ### The Like's Service ###
+  # likes_service:
+  #   build: ../likes_service/Dockerfile
+  #   ports:
+  #     - "5004:5004"
+  #   restart: always
+  #   depends_on:
+  #     - likes_service_db
+  #   environment:
+  #      DSN: "host=likes_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  # likes_service_db:
+  #   image: postgres:alpine3.18
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always        
+  #   environment:
+  #      POSTGRES_USER: postgres
+  #      POSTGRES_PASSWORD: postgres
+  #      POSTGRES_DB: likes_service_db
+
+  # ### The Follow's Service ###
+  # follows_service:
+  #   build: ../follows_service/Dockerfile
+  #   ports:
+  #     - "5005:5005"
+  #   restart: always
+  #   depends_on:
+  #     - follows_service_db
+  #   environment:
+  #      DSN: "host=follows_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  # follows_service_db:
+  #   image: postgres:alpine3.18
+  #   ports:
+  #     - "5432:5432"
+  #   restart: always
+  #   environment:
+  #      POSTGRES_USER: postgres
+  #      POSTGRES_PASSWORD: postgres
+  #      POSTGRES_DB: follows_service_db
+
+  # ### The notification's Service ###
+  # notifications_service:
+  #   build: ../notifications_service/Dockerfile
+  #   ports:
+  #     - "5006:5006"
+  #   restart: always
+  #   depends_on:
+  #     - notifications_service_db
+  #   environment:
+  #      DSN: "host=notifications_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+
+  # notifications_service_db:
+  #    build: ../notifications_service/Dockerfile
+  #    ports:
+  #     - "5432:5432"
+  #    restart: always
+  #    environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: notifications_service_db
