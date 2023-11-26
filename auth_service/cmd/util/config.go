@@ -22,7 +22,7 @@ type Config struct {
 	EMAIL_FROM             string        `mapstructure:"EMAIL_FROM"`
 }
 
-func loadConfig(path string) (*Config, error) {
+func LoadConfig(path string) (*Config, error) {
 
 	viper.AddConfigPath(path)
 	viper.SetConfigName("app")
