@@ -2,22 +2,30 @@ package api
 
 import (
 	db "github.com/AbdulRehman-z/instagram-microservices/auth_service/cmd/db/sqlc"
+	"github.com/AbdulRehman-z/instagram-microservices/auth_service/cmd/token"
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/cmd/util"
-	"github.com/gofiber/fiber"
+	"github.com/gofiber/fiber/v2"
 )
 
 type Server struct {
-	Config util.Config
-	db     db.Store
-	router *fiber.App
+	Config     util.Config
+	store      db.Store
+	router     *fiber.App
+	tokenMaker token.TokenMaker
 }
 
 func NewServer(config util.Config, db db.Store) (*Server, error) {
 	app := fiber.New()
+	tokenMaker, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
+	if err != nil {
+		return nil, err
+	}
+
 	server := &Server{
-		Config: config,
-		db:     db,
-		router: app,
+		Config:     config,
+		store:      db,
+		router:     app,
+		tokenMaker: tokenMaker,
 	}
 
 	server.SetupRoutes()
