@@ -22,6 +22,3 @@ clean: down
 # Shortcut for running the entire workflow
 run: build up
 
-# Shortcut for running tests (assuming you have test targets in each service)
-test:
-	@docker-compose run --rm $(SERVICES) npm test
