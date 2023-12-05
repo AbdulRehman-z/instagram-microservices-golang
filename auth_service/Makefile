@@ -9,10 +9,10 @@ createdb:
 	docker exec -it $(CONTAINER_NAME) createdb --username=postgres --owner=postgres $(DB_NAME)
 
 migrate-up:
-	migrate -path ./cmd/db/migration -database "$(DB_URL)" -verbose up
+	migrate -path ./db/migration -database "$(DB_URL)" -verbose up
 
 migrate-down:
-	migrate -path ./cmd/db/migration -database "$(DB_URL)" -verbose down
+	migrate -path ./db/migration -database "$(DB_URL)" -verbose down
 
 sqlc:
 	sqlc generate
