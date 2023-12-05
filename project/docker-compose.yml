@@ -2,25 +2,56 @@ version: '3'
 
 services:
 
+  redis:
+    image: redis:7.2.2-alpine
+    ports:
+      - "6379:6379"
+    restart: always
+  
+  nginx:
+    depends_on:
+      - auth_service
+    # restart: always
+    build:
+      context: ../nginx
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'   
+  
   #### The Auth Service ####
   auth_service:
-    build: ../auth_service/Dockerfile
+    build: 
+      context: ../auth_service
+      dockerfile: Dockerfile
     ports:
       - "5000:5000"
     restart: always  
-    depends_on:
-      - auth_service_db  
     environment:
-       DSN: "host=auth_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
-
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@auth_service_db:5432/auth?sslmode=disable"  
+    depends_on:
+      auth_service_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    entrypoint: ["/app/main"]
+   
   auth_service_db:
     image: postgres:alpine3.18
     ports:
       - "5432:5432"
     restart: always  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
     environment:
        POSTGRES_USER: postgres
-       POSTGRES_PASSWORD: postgres
+       POSTGRES_PASSWORD: password
        POSTGRES_DB: auth
 
   # ### The User Profile Service ###
