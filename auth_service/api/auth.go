@@ -86,8 +86,8 @@ func (server *Server) LoginUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, "internal err")
 	}
 
-	fmt.Println(refreshToken, refreshPayload)
-
+	res := server.rStore.HSet(context.Background(), refreshPayload.Id.String(), "email", refreshPayload.Email,
+		"refreshToken", refreshToken, "expiresAt", refreshPayload.ExpiredAt)
+	fmt.Println(res)
 	return nil
-
 }
