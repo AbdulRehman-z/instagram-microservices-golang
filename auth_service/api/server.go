@@ -5,16 +5,18 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/token"
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/util"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
-	Config     util.Config
-	store      db.Store
-	router     *fiber.App
-	tokenMaker token.TokenMaker
+	Config      util.Config
+	store       db.Store
+	redisClient *redis.Client
+	router      *fiber.App
+	tokenMaker  token.TokenMaker
 }
 
-func NewServer(config util.Config, db db.Store) (*Server, error) {
+func NewServer(config util.Config, db db.Store, redisClient *redis.Client) (*Server, error) {
 	app := fiber.New()
 	tokenMaker, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
 	if err != nil {
@@ -22,10 +24,11 @@ func NewServer(config util.Config, db db.Store) (*Server, error) {
 	}
 
 	server := &Server{
-		Config:     config,
-		store:      db,
-		router:     app,
-		tokenMaker: tokenMaker,
+		Config:      config,
+		store:       db,
+		redisClient: redisClient,
+		router:      app,
+		tokenMaker:  tokenMaker,
 	}
 
 	server.SetupRoutes()
