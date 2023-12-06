@@ -9,11 +9,11 @@ import (
 )
 
 type Server struct {
-	Config      util.Config
-	store       db.Store
-	redisClient *redis.Client
-	router      *fiber.App
-	tokenMaker  token.TokenMaker
+	Config     util.Config
+	store      db.Store
+	rStore     *redis.Client
+	router     *fiber.App
+	tokenMaker token.TokenMaker
 }
 
 func NewServer(config util.Config, db db.Store, redisClient *redis.Client) (*Server, error) {
@@ -24,11 +24,11 @@ func NewServer(config util.Config, db db.Store, redisClient *redis.Client) (*Ser
 	}
 
 	server := &Server{
-		Config:      config,
-		store:       db,
-		redisClient: redisClient,
-		router:      app,
-		tokenMaker:  tokenMaker,
+		Config:     config,
+		store:      db,
+		rStore:     redisClient,
+		router:     app,
+		tokenMaker: tokenMaker,
 	}
 
 	server.SetupRoutes()
