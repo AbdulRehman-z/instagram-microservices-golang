@@ -20,6 +20,9 @@ type Config struct {
 	EMAIL_PORT             string        `mapstructure:"EMAIL_PORT"`
 	EMAIL_USERNAME         string        `mapstructure:"EMAIL_USERNAME"`
 	EMAIL_FROM             string        `mapstructure:"EMAIL_FROM"`
+	REDIS_HOST             string        `mapstructure:"REDIS_HOST"`
+	REDIS_PORT             string        `mapstructure:"REDIS_PORT"`
+	REDIS_PASSWORD         string        `mapstructure:"REDIS_PASSWORD"`
 }
 
 func LoadConfig(path string) (*Config, error) {
