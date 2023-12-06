@@ -32,11 +32,13 @@ func main() {
 
 	// redis client
 	redisClient := cache.NewRedisClient(config.REDIS_HOST, config.REDIS_PORT, config.REDIS_PASSWORD, 0)
+
 	store := db.NewStore(conn)
 	server, err := api.NewServer(*config, store, redisClient)
 	if err != nil {
 		slog.Error("Cannot create server: ", err)
 	}
+
 	err = server.Start(config.LISTEN_ADDR)
 	if err != nil {
 		slog.Error("Failed to start server: ", err)
