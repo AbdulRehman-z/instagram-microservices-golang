@@ -91,3 +91,7 @@ func (server *Server) LoginUser(c *fiber.Ctx) error {
 	fmt.Println(res)
 	return nil
 }
+
+func (s *Server) Health(ctx *fiber.Ctx) error {
+	return ctx.SendString("OK")
+}
