@@ -7,8 +7,12 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/api"
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/cache"
 	db "github.com/AbdulRehman-z/instagram-microservices/auth_service/db/sqlc"
+	"github.com/AbdulRehman-z/instagram-microservices/auth_service/mail"
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/util"
+	"github.com/AbdulRehman-z/instagram-microservices/auth_service/worker"
+	"github.com/hibiken/asynq"
 	_ "github.com/lib/pq"
+	"github.com/redis/go-redis/v9"
 )
 
 func main() {
@@ -33,8 +37,19 @@ func main() {
 	// redis client
 	redisClient := cache.NewRedisClient(config.REDIS_HOST, config.REDIS_PORT, config.REDIS_PASSWORD, 0)
 
+	// task distributor
+	options := asynq.RedisClientOpt{
+		Addr: redisClient.Options().Addr,
+	}
+	distributor := worker.NewDistributor(&options)
+
 	store := db.NewStore(conn)
-	server, err := api.NewServer(*config, store, redisClient)
+	go run(config, store, redisClient, distributor)
+
+}
+
+func run(config *util.Config, store db.Store, redisClient *redis.Client, distributor worker.Distributor) {
+	server, err := api.NewServer(*config, store, redisClient, distributor)
 	if err != nil {
 		slog.Error("Cannot create server: ", err)
 	}
@@ -42,5 +57,13 @@ func main() {
 	err = server.Start(config.LISTEN_ADDR)
 	if err != nil {
 		slog.Error("Failed to start server: ", err)
+	}
+}
+
+func runTaskProcessor(options asynq.RedisClientOpt, store db.Store, mail mail.Mailer) {
+	processor := worker.NewProcessor(&options, store, mail)
+	err := processor.Start()
+	if err != nil {
+		slog.Error("failed to start task processor", "err", err)
 	}
 }
