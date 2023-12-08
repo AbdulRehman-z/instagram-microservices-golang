@@ -33,7 +33,7 @@ func NewProcessor(options *asynq.RedisClientOpt, store db.Store, mailer mail.Mai
 			DefaultQueue:  3,
 		},
 		ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
-			slog.Error("Error processing task from queue: ", err, task.Type, task.Payload)
+			slog.Error("Error processing task from queue: ", "err", err, "type", task.Type, "payload", task.Payload)
 		}),
 	})
 
