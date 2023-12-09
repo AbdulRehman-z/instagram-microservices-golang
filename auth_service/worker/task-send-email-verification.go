@@ -24,7 +24,7 @@ func (d *TaskDistributor) TaskSendVerificationEmail(ctx context.Context, payload
 	}
 
 	task := asynq.NewTask(
-		TaskTypeEmailVerification,
+		TaskSignupEmailVerification,
 		marshal,
 		options...,
 	)
