@@ -9,6 +9,7 @@ import (
 type Store interface {
 	Querier
 	VerifyEmailTx(ctx context.Context, arg VerifyEmailTxParams) (*VerifyEmailTxResult, error)
+	RegisterUserTx(ctx context.Context, arg RegisterUserTXParams) (*RegisterUserTXResult, error)
 }
 
 type sqlStore struct {
