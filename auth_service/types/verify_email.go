@@ -6,7 +6,7 @@ type (
 		SecretCode string `query:"secret_code" validate:"required,gte=6"`
 	}
 
-	VerifyEmailResponse struct {
+	VerifyEmailResParams struct {
 		IsEmailVerified bool `json:"is_email_verified"`
 	}
 )

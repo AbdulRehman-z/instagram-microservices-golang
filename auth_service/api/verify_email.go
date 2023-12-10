@@ -26,7 +26,7 @@ func (s *Server) VerifyEmail(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
-	resp := types.VerifyEmailResponse{
+	resp := types.VerifyEmailResParams{
 		IsEmailVerified: verifyTxResult.User.IsEmailVerified && verifyTxResult.VerifyEmail.IsUsed,
 	}
 
