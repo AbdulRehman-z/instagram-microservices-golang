@@ -10,10 +10,10 @@ import (
 )
 
 var (
-	CriticaLQueue                  = "critical"
-	DefaultQueue                   = "default"
-	TaskSignupEmailVerification    = "signup_verification"
-	TaskChangePasswordVerification = "change_password_verification"
+	CriticaLQueue                       = "critical"
+	DefaultQueue                        = "default"
+	TaskSignupVerificationEmail         = "signup_verification"
+	TaskPasswordChangeVerificationEmail = "password_changed"
 )
 
 type Processor interface {
@@ -47,7 +47,7 @@ func NewProcessor(options *asynq.RedisClientOpt, store db.Store, mailer mail.Mai
 
 func (p *TaskProcessor) Start() error {
 	mux := asynq.NewServeMux()
-	mux.HandleFunc(TaskSignupEmailVerification, p.ProcessTask)
-	mux.HandleFunc(TaskChangePasswordVerification, p.ProcessTask)
+	mux.HandleFunc(TaskSignupVerificationEmail, p.ProcessTask)
+	mux.HandleFunc(TaskPasswordChangeVerificationEmail, p.ProcessTask)
 	return p.server.Start(mux)
 }

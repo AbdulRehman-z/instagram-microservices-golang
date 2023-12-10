@@ -7,7 +7,8 @@ import (
 )
 
 type Distributor interface {
-	TaskSendVerificationEmail(ctx context.Context, payload *PayloadSendVerificationEmail, options ...asynq.Option) error
+	TaskSendSignupEmail(ctx context.Context, payload *PayloadSendVerificationEmail, options ...asynq.Option) error
+	TaskPasswordChangeVerificationEmail(ctx context.Context, payload *PayloadSendVerificationEmail, options ...asynq.Option) error
 }
 
 type TaskDistributor struct {
