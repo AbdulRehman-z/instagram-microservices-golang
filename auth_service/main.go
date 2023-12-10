@@ -44,7 +44,9 @@ func main() {
 	distributor := worker.NewDistributor(&options)
 
 	store := db.NewStore(conn)
-	go run(config, store, redisClient, distributor)
+	mailer := mail.NewMailSender(config.EMAIL_USERNAME, config.EMAIL_FROM, config.APP_PASSWORD)
+	go runTaskProcessor(options, store, mailer)
+	run(config, store, redisClient, distributor)
 
 }
 
