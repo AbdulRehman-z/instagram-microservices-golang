@@ -11,7 +11,7 @@ import (
 )
 
 const getUser = `-- name: GetUser :one
-SELECT id, username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
+SELECT id, hashed_password, email, is_email_verified, password_changed_at, created_at
 FROM "users"
 WHERE "email" = $1 
 LIMIT 1
@@ -22,9 +22,7 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Username,
 		&i.HashedPassword,
-		&i.FullName,
 		&i.Email,
 		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
@@ -39,7 +37,7 @@ INSERT INTO "users" (
         "hashed_password"
     )
 VALUES ($1, $2)
-RETURNING id, username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
+RETURNING id, hashed_password, email, is_email_verified, password_changed_at, created_at
 `
 
 type RegisterUserParams struct {
@@ -52,9 +50,7 @@ func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) (Use
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Username,
 		&i.HashedPassword,
-		&i.FullName,
 		&i.Email,
 		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
@@ -68,34 +64,29 @@ UPDATE users
 SET 
     hashed_password = coalesce($1, hashed_password),
     password_changed_at = coalesce($2, password_changed_at),
-    email = coalesce($3, email),
-    is_email_verified = coalesce($4, is_email_verified)
-WHERE username = $5
-RETURNING id, username, hashed_password, full_name, email, is_email_verified, password_changed_at, created_at
+    is_email_verified = coalesce($3, is_email_verified)
+WHERE email = $4
+RETURNING id, hashed_password, email, is_email_verified, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
 	HashedPassword    sql.NullString `json:"hashed_password"`
 	PasswordChangedAt sql.NullTime   `json:"password_changed_at"`
-	Email             sql.NullString `json:"email"`
 	IsEmailVerified   sql.NullBool   `json:"is_email_verified"`
-	Username          string         `json:"username"`
+	Email             string         `json:"email"`
 }
 
 func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, updateUser,
 		arg.HashedPassword,
 		arg.PasswordChangedAt,
-		arg.Email,
 		arg.IsEmailVerified,
-		arg.Username,
+		arg.Email,
 	)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Username,
 		&i.HashedPassword,
-		&i.FullName,
 		&i.Email,
 		&i.IsEmailVerified,
 		&i.PasswordChangedAt,

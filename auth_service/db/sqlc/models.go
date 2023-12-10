@@ -10,9 +10,7 @@ import (
 
 type User struct {
 	ID                int32     `json:"id"`
-	Username          string    `json:"username"`
 	HashedPassword    string    `json:"hashed_password"`
-	FullName          string    `json:"full_name"`
 	Email             string    `json:"email"`
 	IsEmailVerified   bool      `json:"is_email_verified"`
 	PasswordChangedAt time.Time `json:"password_changed_at"`
@@ -21,7 +19,6 @@ type User struct {
 
 type VerifyEmail struct {
 	ID         int32     `json:"id"`
-	Username   string    `json:"username"`
 	Email      string    `json:"email"`
 	SecretCode string    `json:"secret_code"`
 	IsUsed     bool      `json:"is_used"`
