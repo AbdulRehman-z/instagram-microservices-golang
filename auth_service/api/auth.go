@@ -38,13 +38,13 @@ func (server *Server) RegisterUser(c *fiber.Ctx) error {
 			opts := []asynq.Option{
 				asynq.MaxRetry(10),
 				asynq.ProcessIn(10),
-				asynq.Queue(worker.TaskSignupEmailVerification),
+				asynq.Queue(worker.TaskSignupVerificationEmail),
 			}
 
 			payload := &worker.PayloadSendVerificationEmail{
 				Email: user.Email,
 			}
-			err := server.taskDistributor.TaskSendVerificationEmail(c.Context(), payload, opts...)
+			err := server.taskDistributor.TaskSendSignupEmail(c.Context(), payload, opts...)
 			if err != nil {
 				return fmt.Errorf("cannot send verification email: %w", err)
 			}
@@ -113,9 +113,53 @@ func (server *Server) LoginUser(c *fiber.Ctx) error {
 	return nil
 }
 
-// func (s *Server) UpdateUser(ctx *fiber.Ctx) error {
-// 	var
-// }
+func (server *Server) ChangePassword(c *fiber.Ctx) error {
+	var req types.ChangePasswordReqParams
+	if err := c.BodyParser(&req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	if err := util.CheckValidationErrors(req); err != nil {
+		return fiber.NewError(fiber.StatusBadRequest, err.Error())
+	}
+
+	hashedPassword, err := util.HashPassword(req.NewPassword)
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "internal err")
+	}
+
+	userTx, err := server.store.ChangePasswordTx(c.Context(), db.ChangePasswordTxRequest{
+		Email:             req.Email,
+		NewHashedPassword: hashedPassword,
+		AfterChange: func(user db.User) error {
+			opts := []asynq.Option{
+				asynq.MaxRetry(10),
+				asynq.ProcessIn(10),
+				asynq.Queue(worker.TaskPasswordChangeVerificationEmail),
+			}
+
+			payload := &worker.PayloadSendVerificationEmail{
+				Email: user.Email,
+			}
+			err := server.taskDistributor.TaskPasswordChangeVerificationEmail(c.Context(), payload, opts...)
+			if err != nil {
+				return fmt.Errorf("cannot send password changed email: %w", err)
+			}
+			return nil
+		},
+	})
+	if err != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
+	}
+
+	response := types.ChangePasswordResParams{
+		Email:             userTx.User.Email,
+		PasswordChangedAt: userTx.User.PasswordChangedAt,
+	}
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"data": response,
+	})
+}
 
 func (s *Server) Health(ctx *fiber.Ctx) error {
 	return ctx.SendString("OK")
