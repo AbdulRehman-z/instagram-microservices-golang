@@ -31,7 +31,7 @@ func (s *sqlStore) VerifyEmailTx(ctx context.Context, arg VerifyEmailTxParams) (
 		}
 
 		result.User, err = q.UpdateUser(ctx, UpdateUserParams{
-			Username: result.VerifyEmail.Username,
+			Email: result.VerifyEmail.Email,
 			IsEmailVerified: sql.NullBool{
 				Valid: true,
 				Bool:  true,
