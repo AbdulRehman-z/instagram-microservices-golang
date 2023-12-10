@@ -7,6 +7,7 @@ import (
 
 type Mailer interface {
 	SendEmail(to []string, subject string, body string) error
+	VerifyEmailTemplate(email string, link string) string
 }
 
 type MailService struct {
@@ -39,14 +40,7 @@ func (m *MailService) SendEmail(to []string, subject string, body string) error 
 
 	// Authentication.
 	auth := smtp.PlainAuth("", from, password, smtpHost)
-
-	// msg := []byte("To: recipient@example.net\r\n" +
-	// 	"Subject: discount Gophers!\r\n" +
-	// 	"\r\n" +
-	// 	body\r\n")
-
-	msg := []byte("From: " + m.name + "<" + from + ">\r\n" +
-		"To: " + to[0] + "\r\n" +
+	msg := []byte("To: " + receiver[0] + "\r\n" +
 		"Subject: " + subject + "\r\n" +
 		"\r\n" +
 		body + "\r\n")
@@ -63,5 +57,13 @@ func (m *MailService) SendEmail(to []string, subject string, body string) error 
 	}
 
 	return nil
+}
 
+func (m *MailService) VerifyEmailTemplate(email string, link string) string {
+	return `
+		<p>Hi ` + email + `</p>
+		<p>Please verify your email by using the following link: <a href="` + link + `">Verify Email</a></p>
+		<p>Regards,</p>
+		<p>Instagram Team</p>
+	`
 }
