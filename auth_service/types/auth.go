@@ -31,4 +31,15 @@ type (
 		RefreshToken          string    `json:"refresh_token"`
 		RefreshTokenExpiresAt string    `json:"refresh_token_expires_at"`
 	}
+
+	ChangePasswordReqParams struct {
+		Email       string `json:"username" validate:"required,alpha,min=1,max=20"`
+		NewPassword string `json:"new_hashed_password" validate:"required,min=8"`
+	}
+
+	ChangePasswordResParams struct {
+		Email             string    `json:"username"`
+		HashedPassword    string    `json:"hashed_password"`
+		PasswordChangedAt time.Time `json:"password_changed_at"`
+	}
 )
