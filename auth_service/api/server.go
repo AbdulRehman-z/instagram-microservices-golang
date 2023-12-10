@@ -47,9 +47,11 @@ func (server *Server) Shutdown() error {
 }
 
 func (server *Server) SetupRoutes() {
+
 	server.router.Get("/health", server.Health)
 	server.router.Post("/signup", server.RegisterUser)
 	server.router.Post("/login", server.LoginUser)
+	server.router.Post("/forgot_password", server.ChangePassword)
 	// server.router.Post("/login", server.login)
 	// server.router.Post("/verify-email", server.verifyEmail)
 	// server.router.Post("/refresh", server.refresh)
