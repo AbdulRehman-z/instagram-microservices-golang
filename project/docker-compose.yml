@@ -10,7 +10,7 @@ services:
   
   nginx:
     depends_on:
-      - auth_service
+      - auth
     # restart: always
     build:
       context: ../nginx
@@ -19,27 +19,27 @@ services:
       - '8080:80'   
   
   #### The Auth Service ####
-  auth_service:
+  auth:
     build: 
       context: ../auth_service
       dockerfile: Dockerfile
     ports:
       - "5000:5000"
-    restart: always  
+    restart: on-failure 
     environment:
       REDIS_HOST: "redis"
       REDIS_PORT: "6379"
       DB_DRIVER: "postgres"
-      DB_URL: "postgres://postgres:password@auth_service_db:5432/auth?sslmode=disable"  
+      DB_URL: "postgres://postgres:password@auth_db:5432/auth?sslmode=disable"  
     depends_on:
-      auth_service_db:
+      auth_db:
         condition: service_healthy
         restart: true
       redis:
         condition: service_started
     entrypoint: ["/app/main"]
    
-  auth_service_db:
+  auth_db:
     image: postgres:alpine3.18
     ports:
       - "5432:5432"
