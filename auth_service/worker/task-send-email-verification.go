@@ -63,6 +63,10 @@ func (p *TaskProcessor) ProcessTask(ctx context.Context, task *asynq.Task) error
 		return fmt.Errorf("cannot load config: %w", err)
 	}
 
+	fmt.Println("----------------------------")
+	fmt.Println("task type: ", task.Type())
+	fmt.Println("----------------------------")
+
 	var payload PayloadSendVerificationEmail
 	if err := json.Unmarshal(task.Payload(), &payload); err != nil {
 		return fmt.Errorf("cannot unmarshal payload: %w", err)
@@ -76,16 +80,24 @@ func (p *TaskProcessor) ProcessTask(ctx context.Context, task *asynq.Task) error
 	switch task.Type() {
 	case TaskSignupVerificationEmail:
 		err = sendSignupVerificationEmail(ctx, user, p, config)
+		slog.Info("Sending signup verification email")
 		if err != nil {
 			return fmt.Errorf("err: %w", err)
 		}
 	case TaskPasswordChangeVerificationEmail:
 		err = sendPasswordChangeVerificationEmail(ctx, user, p, config)
+		slog.Info("Sending password change verification email")
 		if err != nil {
 			return fmt.Errorf("err: %w", err)
 		}
-		// slog.Info()
+	default:
+		return fmt.Errorf("unexpected task type: %s", task.Type())
 	}
+
+	fmt.Println("----------------------------")
+	fmt.Println("task processed successfully")
+	fmt.Println("----------------------------")
+
 	return nil
 }
 
