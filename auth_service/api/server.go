@@ -6,6 +6,7 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/util"
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/worker"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/logger"
 	"github.com/redis/go-redis/v9"
 )
 
@@ -25,6 +26,7 @@ func NewServer(config util.Config, db db.Store, redisClient *redis.Client, taskD
 		return nil, err
 	}
 
+	app.Use(logger.New(logger.ConfigDefault))
 	server := &Server{
 		Config:          config,
 		store:           db,
