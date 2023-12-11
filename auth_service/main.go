@@ -63,7 +63,7 @@ func run(config *util.Config, store db.Store, redisClient *redis.Client, distrib
 }
 
 func runTaskProcessor(options asynq.RedisClientOpt, store db.Store, mail mail.Mailer) {
-	processor := worker.NewProcessor(&options, store, mail)
+	processor := worker.NewProcessor(options, store, mail)
 	err := processor.Start()
 	if err != nil {
 		slog.Error("failed to start task processor", "err", err)
