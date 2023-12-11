@@ -2,6 +2,7 @@ package worker
 
 import (
 	"context"
+	"fmt"
 	"log/slog"
 
 	db "github.com/AbdulRehman-z/instagram-microservices/auth_service/db/sqlc"
@@ -27,7 +28,7 @@ type TaskProcessor struct {
 	mailer mail.Mailer
 }
 
-func NewProcessor(options *asynq.RedisClientOpt, store db.Store, mailer mail.Mailer) Processor {
+func NewProcessor(options asynq.RedisClientOpt, store db.Store, mailer mail.Mailer) Processor {
 	server := asynq.NewServer(options, asynq.Config{
 		Queues: map[string]int{
 			CriticaLQueue: 6,
@@ -46,6 +47,10 @@ func NewProcessor(options *asynq.RedisClientOpt, store db.Store, mailer mail.Mai
 }
 
 func (p *TaskProcessor) Start() error {
+	fmt.Println("----------------------------------")
+	fmt.Println("Starting task processor...")
+	fmt.Println("----------------------------------")
+
 	mux := asynq.NewServeMux()
 	mux.HandleFunc(TaskSignupVerificationEmail, p.ProcessTask)
 	mux.HandleFunc(TaskPasswordChangeVerificationEmail, p.ProcessTask)
