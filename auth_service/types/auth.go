@@ -8,19 +8,18 @@ import (
 
 type (
 	RegisterUserReqParams struct {
-		Email    string `json:"username" validate:"required,alpha,min=1,max=20"`
+		Email    string `json:"email" validate:"required,email"`
 		Password string `json:"password" validate:"required,min=8"`
 	}
 
 	RegisterUserResParams struct {
-		Email             string    `json:"username"`
-		HashedPassword    string    `json:"hashed_password"`
+		Email             string    `json:"email"`
+		PasswordCreatedAt time.Time `json:"password_created_at"`
 		PasswordChangedAt time.Time `json:"password_changed_at"`
-		CreatedAt         time.Time `json:"password_created_at"`
 	}
 
 	LoginUserReqParams struct {
-		Email    string `json:"username" validate:"required,alpha,min=1,max=20"`
+		Email    string `json:"email" validate:"required,email"`
 		Password string `json:"password" validate:"required,min=8"`
 	}
 
@@ -33,13 +32,12 @@ type (
 	}
 
 	ChangePasswordReqParams struct {
-		Email       string `json:"username" validate:"required,alpha,min=1,max=20"`
+		Email       string `json:"email" validate:"required,email"`
 		NewPassword string `json:"new_hashed_password" validate:"required,min=8"`
 	}
 
 	ChangePasswordResParams struct {
-		Email             string    `json:"username"`
-		HashedPassword    string    `json:"hashed_password"`
+		Email             string    `json:"email"`
 		PasswordChangedAt time.Time `json:"password_changed_at"`
 	}
 )
