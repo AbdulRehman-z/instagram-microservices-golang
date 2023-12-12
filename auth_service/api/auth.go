@@ -39,7 +39,7 @@ func (server *Server) RegisterUser(c *fiber.Ctx) error {
 			opts := []asynq.Option{
 				asynq.MaxRetry(10),
 				asynq.ProcessIn(10 * time.Second),
-				asynq.Queue(worker.TaskSignupVerificationEmail),
+				asynq.Queue(worker.CriticaLQueue),
 			}
 
 			payload := &worker.PayloadSendVerificationEmail{
