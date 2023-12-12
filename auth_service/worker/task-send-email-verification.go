@@ -9,6 +9,7 @@ import (
 	db "github.com/AbdulRehman-z/instagram-microservices/auth_service/db/sqlc"
 	"github.com/AbdulRehman-z/instagram-microservices/auth_service/util"
 	"github.com/hibiken/asynq"
+	"github.com/rs/zerolog/log"
 )
 
 // TaskSignupVerificationEmail is the task type for sending verification email
@@ -52,12 +53,13 @@ func (d *TaskDistributor) TaskPasswordChangeVerificationEmail(ctx context.Contex
 	if err != nil {
 		return fmt.Errorf("failed to enqueue task: %v", err)
 	}
-	slog.Info("Enqueued task: ", "info", info)
+	log.Info().Str("type", task.Type()).Bytes("payload", task.Payload()).Str("queue", info.Queue).
+		Int("max_retry", info.MaxRetry).Msg("enqueued task")
 	return nil
 }
 
 // ProcessTask processes the task and sends the email
-func (p *TaskProcessor) ProcessTask(ctx context.Context, task *asynq.Task) error {
+func (p *TaskProcessor) Process(ctx context.Context, task *asynq.Task) error {
 	config, err := util.LoadConfig(".")
 	if err != nil {
 		return fmt.Errorf("cannot load config: %w", err)
@@ -94,10 +96,7 @@ func (p *TaskProcessor) ProcessTask(ctx context.Context, task *asynq.Task) error
 		return fmt.Errorf("unexpected task type: %s", task.Type())
 	}
 
-	fmt.Println("----------------------------")
-	fmt.Println("task processed successfully")
-	fmt.Println("----------------------------")
-
+	log.Info().Str("type", task.Type()).Str("email", user.Email).Msg("processed task")
 	return nil
 }
 
@@ -110,7 +109,7 @@ func sendSignupVerificationEmail(ctx context.Context, user db.User, p *TaskProce
 		return fmt.Errorf("cannot create verify email: %w", err)
 	}
 
-	link := fmt.Sprintf("Please verify your email by using the following link:  http://localhost:8080/auth/verify-email?email_id=%d&secret_code=%s",
+	link := fmt.Sprintf("Please verify your email by using the following link: http://localhost:8080/auth/verify-email?email_id=%d&secret_code=%s",
 		verifyEmail.ID, verifyEmail.SecretCode)
 	err = p.mailer.SendEmail([]string{user.Email}, "Verify your email", p.mailer.VerifyEmailTemplate(user.Email, link))
 	if err != nil {
