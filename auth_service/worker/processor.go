@@ -19,7 +19,7 @@ var (
 
 type Processor interface {
 	Start() error
-	ProcessTask(ctx context.Context, task *asynq.Task) error
+	Process(ctx context.Context, task *asynq.Task) error
 }
 
 type TaskProcessor struct {
@@ -37,6 +37,7 @@ func NewProcessor(options asynq.RedisClientOpt, store db.Store, mailer mail.Mail
 		ErrorHandler: asynq.ErrorHandlerFunc(func(ctx context.Context, task *asynq.Task, err error) {
 			slog.Error("Error processing task from queue: ", "err", err, "type", task.Type, "payload", task.Payload)
 		}),
+		Logger: NewLogger(),
 	})
 
 	return &TaskProcessor{
@@ -52,7 +53,7 @@ func (p *TaskProcessor) Start() error {
 	fmt.Println("----------------------------------")
 
 	mux := asynq.NewServeMux()
-	mux.HandleFunc(TaskSignupVerificationEmail, p.ProcessTask)
-	mux.HandleFunc(TaskPasswordChangeVerificationEmail, p.ProcessTask)
+	mux.HandleFunc(TaskSignupVerificationEmail, p.Process)
+	// mux.HandleFunc(TaskPasswordChangeVerificationEmail, p.ProcessTask)
 	return p.server.Start(mux)
 }
