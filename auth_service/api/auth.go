@@ -91,6 +91,10 @@ func (server *Server) LoginUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
 
+	if !user.IsEmailVerified {
+		return fiber.NewError(fiber.StatusBadRequest, "email not verified")
+	}
+
 	if err := util.ComparePassword(req.Password, user.HashedPassword); err != nil {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid credentials")
 	}
@@ -135,12 +139,13 @@ func (server *Server) ChangePassword(c *fiber.Ctx) error {
 			opts := []asynq.Option{
 				asynq.MaxRetry(10),
 				asynq.ProcessIn(10),
-				asynq.Queue(worker.TaskPasswordChangeVerificationEmail),
+				asynq.Queue(worker.CriticaLQueue),
 			}
 
 			payload := &worker.PayloadSendVerificationEmail{
 				Email: user.Email,
 			}
+
 			err := server.taskDistributor.TaskPasswordChangeVerificationEmail(c.Context(), payload, opts...)
 			if err != nil {
 				return fmt.Errorf("cannot send password changed email: %w", err)
