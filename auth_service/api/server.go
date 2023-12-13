@@ -55,7 +55,7 @@ func (server *Server) SetupRoutes() {
 	server.router.Post("/login", server.LoginUser)
 	server.router.Post("/forgot_password", server.ChangePassword)
 	// server.router.Post("/login", server.login)
-	// server.router.Post("/verify-email", server.verifyEmail)
+	server.router.Post("/verify-email", server.VerifyEmail)
 	// server.router.Post("/refresh", server.refresh)
 	// server.router.Post("/logout", server.logout)
 	// server.router.Post("/forgot-password", server.forgotPassword)
