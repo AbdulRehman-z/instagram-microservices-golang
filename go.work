@@ -10,4 +10,5 @@ use (
 	./user_profile_service
 	./feed_service
 	./create-account_service
+	./cache
 )
