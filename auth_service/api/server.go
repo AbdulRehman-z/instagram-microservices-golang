@@ -49,15 +49,10 @@ func (server *Server) Shutdown() error {
 }
 
 func (server *Server) SetupRoutes() {
-
 	server.router.Get("/health", server.Health)
 	server.router.Post("/signup", server.RegisterUser)
 	server.router.Post("/login", server.LoginUser)
 	server.router.Post("/forgot_password", server.ChangePassword)
-	// server.router.Post("/login", server.login)
+	server.router.Post("/refresh", server.renewAccessTokenHandler)
 	server.router.Post("/verify-email", server.VerifyEmail)
-	// server.router.Post("/refresh", server.refresh)
-	// server.router.Post("/logout", server.logout)
-	// server.router.Post("/forgot-password", server.forgotPassword)
-	// server.router.Post("/reset-password", server.resetPassword)
 }
