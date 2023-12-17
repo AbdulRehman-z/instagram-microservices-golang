@@ -54,6 +54,6 @@ func (p *TaskProcessor) Start() error {
 
 	mux := asynq.NewServeMux()
 	mux.HandleFunc(TaskSignupVerificationEmail, p.Process)
-	// mux.HandleFunc(TaskPasswordChangeVerificationEmail, p.ProcessTask)
+	mux.HandleFunc(TaskPasswordChangeVerificationEmail, p.Process)
 	return p.server.Start(mux)
 }
