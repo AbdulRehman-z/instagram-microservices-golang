@@ -36,7 +36,7 @@ func NewServer(config util.Config, db db.Store, redisClient *redis.Client, taskD
 		taskDistributor: taskDistributor,
 	}
 
-	server.SetupRoutes()
+	server.SetupRoutes(app)
 	return server, nil
 }
 
@@ -48,11 +48,13 @@ func (server *Server) Shutdown() error {
 	return server.router.Shutdown()
 }
 
-func (server *Server) SetupRoutes() {
+func (server *Server) SetupRoutes(app *fiber.App) {
 	server.router.Get("/health", server.Health)
-	server.router.Post("/signup", server.RegisterUser)
-	server.router.Post("/login", server.LoginUser)
-	server.router.Post("/forgot_password", server.ChangePassword)
-	server.router.Post("/refresh", server.renewAccessTokenHandler)
-	server.router.Post("/verify-email", server.VerifyEmail)
+
+	auth := app.Group("/", AuthMiddleware(server.tokenMaker))
+	auth.Post("/signup", server.RegisterUser)
+	auth.Post("/login", server.LoginUser)
+	auth.Post("/forgot_password", server.ChangePassword)
+	auth.Post("/refresh", server.renewAccessTokenHandler)
+	auth.Post("/verify-email", server.VerifyEmail)
 }
