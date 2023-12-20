@@ -1,5 +1,6 @@
 -- name: CreateAccount :one
 INSERT INTO "accounts" (
+  "email",
   "username",
   "avatar",
   "age",
@@ -7,7 +8,7 @@ INSERT INTO "accounts" (
   "status"
 )
 VALUES(
-    $1,$2,$3,$4,$5
+    $1,$2,$3,$4,$5,$6
 ) 
 RETURNING *;
 
@@ -22,7 +23,12 @@ SET
 WHERE "id" = $1
 RETURNING *;
 
--- name: GetAccount :one
+-- name: GetAccountByUniqueID :one
 SELECT *
 FROM "accounts"
-WHERE "id" = $1;
+WHERE "unique_id" = $1;
+
+-- name: GetAccountByEmail :one
+SELECT *
+FROM "accounts"
+WHERE "email" = $1;
