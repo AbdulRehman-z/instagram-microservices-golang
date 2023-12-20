@@ -11,7 +11,7 @@ import (
 )
 
 const getUser = `-- name: GetUser :one
-SELECT id, hashed_password, email, is_email_verified, password_changed_at, created_at
+SELECT id, hashed_password, unique_id, email, is_email_verified, password_changed_at, created_at
 FROM "users"
 WHERE "email" = $1 
 LIMIT 1
@@ -23,6 +23,7 @@ func (q *Queries) GetUser(ctx context.Context, email string) (User, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.HashedPassword,
+		&i.UniqueID,
 		&i.Email,
 		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
@@ -37,7 +38,7 @@ INSERT INTO "users" (
         "hashed_password"
     )
 VALUES ($1, $2)
-RETURNING id, hashed_password, email, is_email_verified, password_changed_at, created_at
+RETURNING id, hashed_password, unique_id, email, is_email_verified, password_changed_at, created_at
 `
 
 type RegisterUserParams struct {
@@ -51,6 +52,7 @@ func (q *Queries) RegisterUser(ctx context.Context, arg RegisterUserParams) (Use
 	err := row.Scan(
 		&i.ID,
 		&i.HashedPassword,
+		&i.UniqueID,
 		&i.Email,
 		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
@@ -66,7 +68,7 @@ SET
     password_changed_at = coalesce($2, password_changed_at),
     is_email_verified = coalesce($3, is_email_verified)
 WHERE email = $4
-RETURNING id, hashed_password, email, is_email_verified, password_changed_at, created_at
+RETURNING id, hashed_password, unique_id, email, is_email_verified, password_changed_at, created_at
 `
 
 type UpdateUserParams struct {
@@ -87,6 +89,7 @@ func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, e
 	err := row.Scan(
 		&i.ID,
 		&i.HashedPassword,
+		&i.UniqueID,
 		&i.Email,
 		&i.IsEmailVerified,
 		&i.PasswordChangedAt,
