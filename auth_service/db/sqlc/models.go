@@ -6,11 +6,14 @@ package db
 
 import (
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type User struct {
 	ID                int32     `json:"id"`
 	HashedPassword    string    `json:"hashed_password"`
+	UniqueID          uuid.UUID `json:"unique_id"`
 	Email             string    `json:"email"`
 	IsEmailVerified   bool      `json:"is_email_verified"`
 	PasswordChangedAt time.Time `json:"password_changed_at"`

@@ -99,22 +99,31 @@ func (server *Server) LoginUser(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, "invalid credentials")
 	}
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(user.Email, server.Config.ACCESS_TOKEN_DURATION)
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(user.Email, user.UniqueID, server.Config.ACCESS_TOKEN_DURATION)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "internal err")
 	}
 
-	fmt.Println(accessToken, accessPayload)
-
-	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(user.Email, server.Config.REFRESH_TOKEN_DURATION)
+	refreshToken, refreshPayload, err := server.tokenMaker.CreateToken(user.Email, user.UniqueID, server.Config.REFRESH_TOKEN_DURATION)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, "internal err")
 	}
 
 	res := server.rStore.HSet(context.Background(), refreshPayload.Id.String(), "email", refreshPayload.Email,
 		"refreshToken", refreshToken, "expiresAt", refreshPayload.ExpiredAt)
-	fmt.Println(res)
-	return nil
+	if res.Err() != nil {
+		return fiber.NewError(fiber.StatusInternalServerError, "internal err")
+	}
+
+	response := types.LoginUserResParams{
+		AccessToken:           accessToken,
+		AccessTokenExpiresAt:  accessPayload.ExpiredAt,
+		RefreshToken:          refreshToken,
+		RefreshTokenExpiresAt: refreshPayload.ExpiredAt,
+	}
+	return c.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"data": response,
+	})
 }
 
 func (server *Server) ChangePassword(c *fiber.Ctx) error {

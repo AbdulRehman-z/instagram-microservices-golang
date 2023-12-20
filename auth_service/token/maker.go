@@ -1,8 +1,12 @@
 package token
 
-import "time"
+import (
+	"time"
+
+	"github.com/google/uuid"
+)
 
 type TokenMaker interface {
-	CreateToken(email string, duration time.Duration) (string, *Payload, error)
+	CreateToken(email string, uniqueId uuid.UUID, duration time.Duration) (string, *Payload, error)
 	VerifyToken(token string) (*Payload, error)
 }

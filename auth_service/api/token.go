@@ -29,7 +29,7 @@ func (server *Server) renewAccessTokenHandler(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusUnauthorized, "unauthorized")
 	}
 
-	accessToken, accessPayload, err := server.tokenMaker.CreateToken(refreshTokenPayload.Email, server.Config.ACCESS_TOKEN_DURATION)
+	accessToken, accessPayload, err := server.tokenMaker.CreateToken(refreshTokenPayload.Email, refreshTokenPayload.UniqueId, server.Config.ACCESS_TOKEN_DURATION)
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
