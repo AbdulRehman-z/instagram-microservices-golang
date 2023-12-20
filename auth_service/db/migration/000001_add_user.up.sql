@@ -1,6 +1,7 @@
 CREATE TABLE "users" (
   "id" serial PRIMARY KEY,
   "hashed_password" varchar NOT NULL,
+  "unique_id" uuid UNIQUE NOT NULL,
   "email" varchar UNIQUE NOT NULL,
   "is_email_verified" bool NOT NULL DEFAULT false,
   "password_changed_at" timestamptz NOT NULL DEFAULT '0001-01-01',
@@ -15,8 +16,6 @@ CREATE TABLE "verify_emails" (
   "created_at" timestamptz NOT NULL DEFAULT (now()),
   "expired_at" timestamptz NOT NULL DEFAULT (now() + interval '15 minutes')
 );
-
-
 
 CREATE INDEX users_id_idx ON "users" ("id");
 CREATE INDEX users_email_idx ON "users" ("email");
