@@ -12,8 +12,10 @@ import (
 type Account struct {
 	ID        int32          `json:"id"`
 	Username  string         `json:"username"`
-	Uniqueid  string         `json:"uniqueid"`
+	Email     string         `json:"email"`
+	UniqueID  string         `json:"unique_id"`
 	Age       int32          `json:"age"`
+	Gender    string         `json:"gender"`
 	Bio       sql.NullString `json:"bio"`
 	Avatar    sql.NullString `json:"avatar"`
 	Status    string         `json:"status"`

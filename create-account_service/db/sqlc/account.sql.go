@@ -12,6 +12,7 @@ import (
 
 const createAccount = `-- name: CreateAccount :one
 INSERT INTO "accounts" (
+  "email",
   "username",
   "avatar",
   "age",
@@ -19,12 +20,13 @@ INSERT INTO "accounts" (
   "status"
 )
 VALUES(
-    $1,$2,$3,$4,$5
+    $1,$2,$3,$4,$5,$6
 ) 
-RETURNING id, username, uniqueid, age, bio, avatar, status, created_at, updated_at
+RETURNING id, username, email, unique_id, age, gender, bio, avatar, status, created_at, updated_at
 `
 
 type CreateAccountParams struct {
+	Email    string         `json:"email"`
 	Username string         `json:"username"`
 	Avatar   sql.NullString `json:"avatar"`
 	Age      int32          `json:"age"`
@@ -34,6 +36,7 @@ type CreateAccountParams struct {
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
 	row := q.db.QueryRowContext(ctx, createAccount,
+		arg.Email,
 		arg.Username,
 		arg.Avatar,
 		arg.Age,
@@ -44,8 +47,10 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.Uniqueid,
+		&i.Email,
+		&i.UniqueID,
 		&i.Age,
+		&i.Gender,
 		&i.Bio,
 		&i.Avatar,
 		&i.Status,
@@ -55,20 +60,47 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 	return i, err
 }
 
-const getAccount = `-- name: GetAccount :one
-SELECT id, username, uniqueid, age, bio, avatar, status, created_at, updated_at
+const getAccountByEmail = `-- name: GetAccountByEmail :one
+SELECT id, username, email, unique_id, age, gender, bio, avatar, status, created_at, updated_at
 FROM "accounts"
-WHERE "id" = $1
+WHERE "email" = $1
 `
 
-func (q *Queries) GetAccount(ctx context.Context, id int32) (Account, error) {
-	row := q.db.QueryRowContext(ctx, getAccount, id)
+func (q *Queries) GetAccountByEmail(ctx context.Context, email string) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccountByEmail, email)
 	var i Account
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.Uniqueid,
+		&i.Email,
+		&i.UniqueID,
 		&i.Age,
+		&i.Gender,
+		&i.Bio,
+		&i.Avatar,
+		&i.Status,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
+}
+
+const getAccountByUniqueID = `-- name: GetAccountByUniqueID :one
+SELECT id, username, email, unique_id, age, gender, bio, avatar, status, created_at, updated_at
+FROM "accounts"
+WHERE "unique_id" = $1
+`
+
+func (q *Queries) GetAccountByUniqueID(ctx context.Context, uniqueID string) (Account, error) {
+	row := q.db.QueryRowContext(ctx, getAccountByUniqueID, uniqueID)
+	var i Account
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.UniqueID,
+		&i.Age,
+		&i.Gender,
 		&i.Bio,
 		&i.Avatar,
 		&i.Status,
@@ -87,7 +119,7 @@ SET
     "bio" = coalesce($5, bio),
     "status" = coalesce($6, status)
 WHERE "id" = $1
-RETURNING id, username, uniqueid, age, bio, avatar, status, created_at, updated_at
+RETURNING id, username, email, unique_id, age, gender, bio, avatar, status, created_at, updated_at
 `
 
 type UpdateAccountParams struct {
@@ -112,8 +144,10 @@ func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (A
 	err := row.Scan(
 		&i.ID,
 		&i.Username,
-		&i.Uniqueid,
+		&i.Email,
+		&i.UniqueID,
 		&i.Age,
+		&i.Gender,
 		&i.Bio,
 		&i.Avatar,
 		&i.Status,
