@@ -20,7 +20,7 @@ SET
     "age" = coalesce(sqlc.narg('age'), age),
     "bio" = coalesce(sqlc.narg('bio'), bio),
     "status" = coalesce(sqlc.narg('status'), status)
-WHERE "id" = $1
+WHERE "unique_id" = $1
 RETURNING *;
 
 -- name: GetAccountByUniqueID :one
@@ -28,7 +28,6 @@ SELECT *
 FROM "accounts"
 WHERE "unique_id" = $1;
 
--- name: GetAccountByEmail :one
-SELECT *
-FROM "accounts"
-WHERE "email" = $1;
+-- name: DeleteAccountByUniqueID :exec
+DELETE FROM "accounts"
+WHERE "unique_id" = $1;
