@@ -10,7 +10,7 @@ import (
 
 type Querier interface {
 	CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error)
-	GetAccountByEmail(ctx context.Context, email string) (Account, error)
+	DeleteAccountByUniqueID(ctx context.Context, uniqueID string) error
 	GetAccountByUniqueID(ctx context.Context, uniqueID string) (Account, error)
 	UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error)
 }

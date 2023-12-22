@@ -26,12 +26,12 @@ RETURNING id, username, email, unique_id, age, gender, bio, avatar, status, crea
 `
 
 type CreateAccountParams struct {
-	Email    string         `json:"email"`
-	Username string         `json:"username"`
-	Avatar   sql.NullString `json:"avatar"`
-	Age      int32          `json:"age"`
-	Bio      sql.NullString `json:"bio"`
-	Status   string         `json:"status"`
+	Email    string `json:"email"`
+	Username string `json:"username"`
+	Avatar   string `json:"avatar"`
+	Age      int32  `json:"age"`
+	Bio      string `json:"bio"`
+	Status   string `json:"status"`
 }
 
 func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (Account, error) {
@@ -60,29 +60,14 @@ func (q *Queries) CreateAccount(ctx context.Context, arg CreateAccountParams) (A
 	return i, err
 }
 
-const getAccountByEmail = `-- name: GetAccountByEmail :one
-SELECT id, username, email, unique_id, age, gender, bio, avatar, status, created_at, updated_at
-FROM "accounts"
-WHERE "email" = $1
+const deleteAccountByUniqueID = `-- name: DeleteAccountByUniqueID :exec
+DELETE FROM "accounts"
+WHERE "unique_id" = $1
 `
 
-func (q *Queries) GetAccountByEmail(ctx context.Context, email string) (Account, error) {
-	row := q.db.QueryRowContext(ctx, getAccountByEmail, email)
-	var i Account
-	err := row.Scan(
-		&i.ID,
-		&i.Username,
-		&i.Email,
-		&i.UniqueID,
-		&i.Age,
-		&i.Gender,
-		&i.Bio,
-		&i.Avatar,
-		&i.Status,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-	)
-	return i, err
+func (q *Queries) DeleteAccountByUniqueID(ctx context.Context, uniqueID string) error {
+	_, err := q.db.ExecContext(ctx, deleteAccountByUniqueID, uniqueID)
+	return err
 }
 
 const getAccountByUniqueID = `-- name: GetAccountByUniqueID :one
@@ -118,12 +103,12 @@ SET
     "age" = coalesce($4, age),
     "bio" = coalesce($5, bio),
     "status" = coalesce($6, status)
-WHERE "id" = $1
+WHERE "unique_id" = $1
 RETURNING id, username, email, unique_id, age, gender, bio, avatar, status, created_at, updated_at
 `
 
 type UpdateAccountParams struct {
-	ID       int32          `json:"id"`
+	UniqueID string         `json:"unique_id"`
 	Username sql.NullString `json:"username"`
 	Avatar   sql.NullString `json:"avatar"`
 	Age      sql.NullInt32  `json:"age"`
@@ -133,7 +118,7 @@ type UpdateAccountParams struct {
 
 func (q *Queries) UpdateAccount(ctx context.Context, arg UpdateAccountParams) (Account, error) {
 	row := q.db.QueryRowContext(ctx, updateAccount,
-		arg.ID,
+		arg.UniqueID,
 		arg.Username,
 		arg.Avatar,
 		arg.Age,
