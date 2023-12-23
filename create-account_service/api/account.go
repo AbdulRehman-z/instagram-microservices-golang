@@ -2,6 +2,7 @@ package api
 
 import (
 	"database/sql"
+	"fmt"
 
 	db "github.com/AbdulRehman-z/instagram-microservices/create-account_service/db/sqlc"
 	"github.com/AbdulRehman-z/instagram-microservices/create-account_service/token"
@@ -49,9 +50,10 @@ func (s *Server) CreateAccount(c *fiber.Ctx) error {
 
 // GetAccount gets an account
 func (s *Server) GetAccount(c *fiber.Ctx) error {
-	uniqueID := c.Params("unique_id")
+	payload := c.Locals(authorizationPayloadKey).(*token.Payload)
+	fmt.Println("unique_id: ", payload.UniqueId)
 
-	account, err := s.store.GetAccountByUniqueID(c.UserContext(), uniqueID)
+	account, err := s.store.GetAccountByUniqueID(c.UserContext(), payload.UniqueId.String())
 	if err != nil {
 		return fiber.NewError(fiber.StatusInternalServerError, err.Error())
 	}
