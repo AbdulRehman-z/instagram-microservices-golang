@@ -76,7 +76,7 @@ func (s *Server) UpdateAccount(c *fiber.Ctx) error {
 	}
 
 	payload := c.Locals(authorizationPayloadKey).(*token.Payload)
-	if payload.UniqueId.String() != req.Username {
+	if payload.Email != req.Email {
 		return fiber.NewError(fiber.StatusUnauthorized, "unauthorized")
 	}
 

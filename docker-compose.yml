@@ -110,6 +110,7 @@ services:
           restart: true
        redis:
           condition: service_started  
+    entrypoint: ["/app/main"]      
 
   user-profile_db:
     image: postgres:alpine3.18
@@ -166,6 +167,8 @@ services:
         restart: true
       redis:
         condition: service_started  
+    entrypoint: ["/app/main"]      
+
 
   posts_db:
     image: postgres:alpine3.18
@@ -206,26 +209,40 @@ services:
   #      POSTGRES_PASSWORD: postgres
   #      POSTGRES_DB: likes_service_db
 
-  # ### The Follow's Service ###
-  # follows_service:
-  #   build: ../follows_service/Dockerfile
-  #   ports:
-  #     - "5005:5005"
-  #   restart: always
-  #   depends_on:
-  #     - follows_service_db
-  #   environment:
-  #      DSN: "host=follows_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
-
-  # follows_service_db:
-  #   image: postgres:alpine3.18
-  #   ports:
-  #     - "5432:5432"
-  #   restart: always
-  #   environment:
-  #      POSTGRES_USER: postgres
-  #      POSTGRES_PASSWORD: postgres
-  #      POSTGRES_DB: follows_service_db
+  ### The Follow's Service ###
+  followers:
+    build:
+      context: ./followers_service
+    ports:
+      - "5004:5004"
+    restart: always
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@followers_db:5432/followers_db@sslmode=disable"
+    depends_on:
+      followers_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started    
+    entrypoint: ["/app/main"]      
+    
+  followers_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: followers_db
+    healthcheck:  
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2   
 
   # ### The notification's Service ###
   # notifications_service:

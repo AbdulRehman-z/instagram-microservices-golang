@@ -9,8 +9,24 @@ DELETE FROM followers
 WHERE leader_unique_id = $1 AND follower_unique_id = $2
 RETURNING *;
 
+-- name: GetFollowersCount :one
+SELECT COUNT(*) FROM followers
+WHERE leader_unique_id = $1;
+
+-- name: GetFollowingCount :one
+SELECT COUNT(*) FROM followers
+WHERE follower_unique_id = $1;
+
 -- name: GetFollowers :many
-Explain select * from followers where leader_unique_id = $1;
+SELECT "follower_unique_id" FROM followers
+WHERE leader_unique_id = $1
+ORDER BY created_at DESC
+LIMIT $2
+OFFSET $3;
 
 -- name: GetFollowing :many
-Explain select * from followers where follower_unique_id = $1;
+SELECT "leader_unique_id" FROM followers
+WHERE follower_unique_id = $1
+ORDER BY created_at DESC
+LIMIT $2
+OFFSET $3;
