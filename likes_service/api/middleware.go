@@ -3,7 +3,7 @@ package api
 import (
 	"strings"
 
-	"github.com/AbdulRehman-z/instagram-microservices/posts_service/token"
+	"github.com/AbdulRehman-z/instagram-microservices/likes_service/token"
 	"github.com/gofiber/fiber/v2"
 )
 

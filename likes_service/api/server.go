@@ -2,8 +2,8 @@ package api
 
 import (
 	db "github.com/AbdulRehman-z/instagram-microservices/likes_service/db/sqlc"
+	"github.com/AbdulRehman-z/instagram-microservices/likes_service/token"
 	"github.com/AbdulRehman-z/instagram-microservices/likes_service/util"
-	"github.com/AbdulRehman-z/instagram-microservices/posts_service/token"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -46,13 +46,13 @@ func (s *Server) Routes() {
 	auth := s.router.Group("/api", AuthMiddleware(s.TokenVerifier))
 
 	// Post likes api endpoints
-	auth.Post("/likes/post", s.LikePost)
-	auth.Delete("/likes/post", s.UnlikePost)
-	auth.Get("/likes/post/count", s.GetPostLikesCount)
-	auth.Get("/likes/post", s.GetPostLikes)
+	auth.Post("/like/post", s.LikePost)
+	auth.Delete("/like/post", s.UnlikePost)
+	auth.Get("/like/post/count", s.GetPostLikesCount)
+	auth.Get("/like/post", s.GetPostLikes)
 
 	// Comment likes api endpoints
-	auth.Post("/likes/commment", s.LikeComment)
-	auth.Delete("/likes/comment", s.UnlikeComment)
-	auth.Get("/likes/comment/count", s.GetPostLikesCount)
+	auth.Post("/like/commment", s.LikeComment)
+	auth.Delete("/like/comment", s.UnlikeComment)
+	auth.Get("/like/comment/count", s.GetPostLikesCount)
 }
