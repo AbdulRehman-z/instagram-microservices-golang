@@ -185,29 +185,41 @@ services:
       timeout: 1s
       retries: 2   
 
-  # # TODO: Add the Feed Service
-  # ### The Feed Service ### 
-
   # ### The Like's Service ###
-  # likes_service:
-  #   build: ../likes_service/Dockerfile
-  #   ports:
-  #     - "5004:5004"
-  #   restart: always
-  #   depends_on:
-  #     - likes_service_db
-  #   environment:
-  #      DSN: "host=likes_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+  likes_service:
+    build:
+      context: ./likes_service
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    restart: always
+    environment:
+        REDIS_HOST: "redis"
+        REDIS_PORT: "6379"
+        DB_DRIVER: "postgres"
+        DB_URL: "postgres://postgres:password@likes_service_db:5432/likes?sslmode=disable"
+    depends_on:
+      likes_service_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    entrypoint: ["/app/main"]    
 
-  # likes_service_db:
-  #   image: postgres:alpine3.18
-  #   ports:
-  #     - "5432:5432"
-  #   restart: always        
-  #   environment:
-  #      POSTGRES_USER: postgres
-  #      POSTGRES_PASSWORD: postgres
-  #      POSTGRES_DB: likes_service_db
+  likes_service_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always        
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: likes_service_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
 
   ### The Follow's Service ###
   followers:
