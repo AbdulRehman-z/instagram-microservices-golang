@@ -63,16 +63,29 @@ services:
     ports:
       - "5001:5001"
     restart: always
-    depends_on:
-      - create-account_db
     environment:
-       DSN: "host=create-account_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+        REDIS_HOST: "redis"
+        REDIS_PORT: "6379"
+        DB_DRIVER: "postgres"
+        DB_URL: "postgres://postgres:password@create-account_db:5432/create-account?sslmode=disable"
+    depends_on:
+      create-account_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    entrypoint: ["/app/main"]     
 
   create-account_db:
     image: postgres:alpine3.18
     ports:
       - "5432:5432"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
     environment:
        POSTGRES_USER: postgres
        POSTGRES_PASSWORD: postgres
@@ -84,18 +97,30 @@ services:
       context: ./user-profile_service
       dockerfile: Dockerfile
     ports:
-      - "5001:5001"
+      - "5002:5002"
     restart: always
-    depends_on:
-      - user-profile_db
     environment:
-       DSN: "host=user-profile_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@user-profile_db:5432/user-profile?sslmode=disable"
+    depends_on:
+       user-profile_db:
+          condition: service_healthy
+          restart: true
+       redis:
+          condition: service_started  
 
   user-profile_db:
     image: postgres:alpine3.18
     ports:
       - "5432:5432"
     restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -u postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
     environment:
        POSTGRES_USER: postgres
        POSTGRES_PASSWORD: postgres
@@ -130,10 +155,17 @@ services:
     ports:
       - "5003:5003"
     restart: always
-    depends_on:
-      - posts_db
     environment:
-       DSN: "host=posts_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@posts_db:5432/posts?sslmode=disable"
+    depends_on:
+      posts_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started  
 
   posts_db:
     image: postgres:alpine3.18
@@ -144,6 +176,11 @@ services:
        POSTGRES_USER: postgres
        POSTGRES_PASSWORD: postgres
        POSTGRES_DB: posts_db
+    healthcheck: 
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2   
 
   # # TODO: Add the Feed Service
   # ### The Feed Service ### 
