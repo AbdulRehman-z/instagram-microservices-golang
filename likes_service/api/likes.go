@@ -1,6 +1,7 @@
 package api
 
 import (
+	"github.com/AbdulRehman-z/instagram-microservices/comments_service/token"
 	db "github.com/AbdulRehman-z/instagram-microservices/likes_service/db/sqlc"
 	"github.com/AbdulRehman-z/instagram-microservices/likes_service/types"
 	"github.com/AbdulRehman-z/instagram-microservices/likes_service/util"
@@ -18,9 +19,11 @@ func (s *Server) LikePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
+	payload := c.Locals(authorizationPayloadKey).(*token.Payload)
+
 	args := db.LikePostParams{
 		PostID:       req.PostID,
-		UserUniqueID: req.User_unique_id,
+		UserUniqueID: payload.UniqueId,
 	}
 
 	res, err := s.store.LikePost(c.Context(), args)
@@ -45,9 +48,11 @@ func (s *Server) UnlikePost(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
+	payload := c.Locals(authorizationPayloadKey).(*token.Payload)
+
 	args := db.UnlikePostParams{
 		PostID:       req.PostID,
-		UserUniqueID: req.User_unique_id,
+		UserUniqueID: payload.UniqueId,
 	}
 
 	res, err := s.store.UnlikePost(c.Context(), args)
@@ -120,9 +125,11 @@ func (s *Server) LikeComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
+	payload := c.Locals(authorizationPayloadKey).(*token.Payload)
+
 	args := db.LikeCommentParams{
 		CommentID:    req.CommentID,
-		UserUniqueID: req.User_unique_id,
+		UserUniqueID: payload.UniqueId,
 	}
 
 	res, err := s.store.LikeComment(c.Context(), args)
@@ -147,9 +154,11 @@ func (s *Server) UnlikeComment(c *fiber.Ctx) error {
 		return fiber.NewError(fiber.StatusBadRequest, err.Error())
 	}
 
+	payload := c.Locals(authorizationPayloadKey).(*token.Payload)
+
 	args := db.UnlikeCommentParams{
 		CommentID:    req.CommentID,
-		UserUniqueID: req.User_unique_id,
+		UserUniqueID: payload.UniqueId,
 	}
 
 	res, err := s.store.UnlikeComment(c.Context(), args)
