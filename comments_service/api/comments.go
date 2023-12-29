@@ -127,3 +127,9 @@ func (s *Server) DeleteComment(ctx *fiber.Ctx) error {
 		"data": "comment deleted",
 	})
 }
+
+func (s *Server) HealthCheck(ctx *fiber.Ctx) error {
+	return ctx.Status(fiber.StatusOK).JSON(&fiber.Map{
+		"message": "ok",
+	})
+}
