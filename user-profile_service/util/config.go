@@ -5,15 +5,12 @@ import (
 )
 
 type Config struct {
-	DB_DRIVER        string `mapstructure:"DB_DRIVER"`
-	DB_URL           string `mapstructure:"DB_URL"`
-	SYMMETRIC_KEY    string `mapstructure:"SYMMETRIC_KEY"`
-	LISTEN_ADDR      string `mapstructure:"LISTEN_ADDR"`
-	DB_MIGRATION_URL string `mapstructure:"DB_MIGRATION_URL"`
-	REDIS_ADDR       string `mapstructure:"REDIS_ADDR"`
-	REDIS_HOST       string `mapstructure:"REDIS_HOST"`
-	REDIS_PORT       string `mapstructure:"REDIS_PORT"`
-	REDIS_PASSWORD   string `mapstructure:"REDIS_PASSWORD"`
+	SYMMETRIC_KEY  string `mapstructure:"SYMMETRIC_KEY"`
+	LISTEN_ADDR    string `mapstructure:"LISTEN_ADDR"`
+	REDIS_ADDR     string `mapstructure:"REDIS_ADDR"`
+	REDIS_HOST     string `mapstructure:"REDIS_HOST"`
+	REDIS_PORT     string `mapstructure:"REDIS_PORT"`
+	REDIS_PASSWORD string `mapstructure:"REDIS_PASSWORD"`
 }
 
 func LoadConfig(path string) (*Config, error) {
