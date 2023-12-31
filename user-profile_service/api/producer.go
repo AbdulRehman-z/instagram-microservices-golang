@@ -21,12 +21,12 @@ func (s *Server) publish(uniqueId string) error {
 		Stream: USER_PROFILE_STREAM,
 	}).Result()
 	if err != nil {
-		return fmt.Errorf("error adding to stream:")
+		return fmt.Errorf("error adding to stream: %d", err)
 	}
 	if err != nil {
 		return fmt.Errorf("error adding to stream: %d", err)
 	}
-	log.Printf("event added to stream! stream_name: %d ----- response: %d", USER_PROFILE_STREAM, res)
+	log.Printf("added to stream: %s", res)
 
 	return nil
 }
