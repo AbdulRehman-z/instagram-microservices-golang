@@ -7,27 +7,33 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/followers_service/token"
 	"github.com/AbdulRehman-z/instagram-microservices/followers_service/util"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
-	Config        *util.Config
-	router        *fiber.App
-	store         db.Store
-	TokenVerifier token.TokenVerifier
+	Config             *util.Config
+	router             *fiber.App
+	store              db.Store
+	TokenVerifier      token.TokenVerifier
+	redisClient        *redis.Client
+	followersCountChan chan int64
+	followingCountChan chan int64
+	uniqueId           string
 }
 
 func NewServer(config *util.Config, store db.Store) (*Server, error) {
-
 	tokenVerifier, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
 	if err != nil {
 		log.Fatalf("cannot create token maker: %v", err)
 	}
 
 	return &Server{
-		Config:        config,
-		router:        fiber.New(),
-		store:         store,
-		TokenVerifier: tokenVerifier,
+		Config:             config,
+		router:             fiber.New(),
+		store:              store,
+		TokenVerifier:      tokenVerifier,
+		followersCountChan: make(chan int64, 100),
+		redisClient:        redis.NewClient(&redis.Options{Addr: config.REDIS_ADDR}),
 	}, nil
 }
 
