@@ -30,6 +30,8 @@ func run(config *util.Config, store db.Store) error {
 	if err != nil {
 		log.Fatalf("cannot create server: %v", err)
 	}
+	go server.Listener()
+	go server.Publisher()
 	err = server.Start()
 	if err != nil {
 		return err
