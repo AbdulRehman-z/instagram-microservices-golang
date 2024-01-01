@@ -29,7 +29,8 @@ func run(config *util.Config, redisClient redis.Client) {
 	if err != nil {
 		slog.Error("Cannot create server: ", err)
 	}
-
+	go server.Listener()
+	go server.Publisher(server.UniqueId)
 	err = server.Start(config.LISTEN_ADDR)
 	if err != nil {
 		slog.Error("Failed to start server: ", err)
