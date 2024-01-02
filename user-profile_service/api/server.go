@@ -35,7 +35,7 @@ func NewServer(config util.Config, redisClient redis.Client) (*Server, error) {
 		Config:        config,
 		router:        app,
 		tokenVerifier: tokenVerifier,
-		UniqueId:      "12345",
+		UniqueId:      "550e8400-e29b-41d4-a716-446655440000",
 	}
 
 	server.SetupRoutes(app)
