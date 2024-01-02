@@ -122,6 +122,26 @@ func (q *Queries) GetFollowing(ctx context.Context, arg GetFollowingParams) ([]u
 	return items, nil
 }
 
+const getFollowingAndFollowersCount = `-- name: GetFollowingAndFollowersCount :one
+SELECT
+    SUM(CASE WHEN leader_unique_id = $1 THEN 1 ELSE 0 END) AS leader_count,
+    SUM(CASE WHEN follower_unique_id = $1 THEN 1 ELSE 0 END) AS follower_count
+FROM
+    followers
+`
+
+type GetFollowingAndFollowersCountRow struct {
+	LeaderCount   int64 `json:"leader_count"`
+	FollowerCount int64 `json:"follower_count"`
+}
+
+func (q *Queries) GetFollowingAndFollowersCount(ctx context.Context, leaderUniqueID uuid.UUID) (GetFollowingAndFollowersCountRow, error) {
+	row := q.db.QueryRowContext(ctx, getFollowingAndFollowersCount, leaderUniqueID)
+	var i GetFollowingAndFollowersCountRow
+	err := row.Scan(&i.LeaderCount, &i.FollowerCount)
+	return i, err
+}
+
 const getFollowingCount = `-- name: GetFollowingCount :one
 SELECT COUNT(*) FROM followers
 WHERE follower_unique_id = $1
