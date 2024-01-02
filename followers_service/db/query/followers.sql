@@ -30,3 +30,10 @@ WHERE follower_unique_id = $1
 ORDER BY created_at DESC
 LIMIT $2
 OFFSET $3;
+
+-- name: GetFollowingAndFollowersCount :one
+SELECT
+    SUM(CASE WHEN leader_unique_id = $1 THEN 1 ELSE 0 END) AS leader_count,
+    SUM(CASE WHEN follower_unique_id = $1 THEN 1 ELSE 0 END) AS follower_count
+FROM
+    followers;
