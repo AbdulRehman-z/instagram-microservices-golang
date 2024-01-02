@@ -9,7 +9,7 @@ import (
 )
 
 func (s *Server) Publisher(uniqueId string) error {
-	fmt.Println("||||||||||||| PUBLISHER ||||||||||||||")
+	fmt.Println("|||||||||||||------- USER-PROFILE-LISTENER PUBLISHER STARTED -------||||||||||||||")
 	var (
 		USER_PROFILE_STREAM = "user_profile_stream"
 	)
