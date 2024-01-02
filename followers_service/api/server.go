@@ -11,14 +11,13 @@ import (
 )
 
 type Server struct {
-	Config             *util.Config
-	router             *fiber.App
-	store              db.Store
-	TokenVerifier      token.TokenVerifier
-	redisClient        *redis.Client
-	followersCountChan chan int64
-	followingCountChan chan int64
-	uniqueId           string
+	Config                      *util.Config
+	router                      *fiber.App
+	store                       db.Store
+	TokenVerifier               token.TokenVerifier
+	redisClient                 *redis.Client
+	followersFollowingCountChan chan string
+	uniqueId                    string
 }
 
 func NewServer(config *util.Config, store db.Store) (*Server, error) {
@@ -28,12 +27,12 @@ func NewServer(config *util.Config, store db.Store) (*Server, error) {
 	}
 
 	return &Server{
-		Config:             config,
-		router:             fiber.New(),
-		store:              store,
-		TokenVerifier:      tokenVerifier,
-		followersCountChan: make(chan int64, 100),
-		redisClient:        redis.NewClient(&redis.Options{Addr: config.REDIS_ADDR}),
+		Config:                      config,
+		router:                      fiber.New(),
+		store:                       store,
+		TokenVerifier:               tokenVerifier,
+		followersFollowingCountChan: make(chan string),
+		redisClient:                 redis.NewClient(&redis.Options{Addr: config.REDIS_ADDR}),
 	}, nil
 }
 
