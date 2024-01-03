@@ -20,7 +20,7 @@ type Server struct {
 	uniqueId                    string
 }
 
-func NewServer(config *util.Config, store db.Store) (*Server, error) {
+func NewServer(config *util.Config, store db.Store, redisClient *redis.Client) (*Server, error) {
 	tokenVerifier, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
 	if err != nil {
 		log.Fatalf("cannot create token maker: %v", err)
@@ -32,7 +32,7 @@ func NewServer(config *util.Config, store db.Store) (*Server, error) {
 		store:                       store,
 		TokenVerifier:               tokenVerifier,
 		followersFollowingCountChan: make(chan string),
-		redisClient:                 redis.NewClient(&redis.Options{Addr: config.REDIS_ADDR}),
+		redisClient:                 redisClient,
 	}, nil
 }
 
