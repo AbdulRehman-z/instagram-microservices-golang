@@ -7,6 +7,7 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/posts_service/token"
 	"github.com/AbdulRehman-z/instagram-microservices/posts_service/util"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
@@ -14,9 +15,12 @@ type Server struct {
 	store         db.Store
 	router        *fiber.App
 	TokenVerifier token.TokenVerifier
+	redisClient   *redis.Client
+	PostsChan     chan *PostEvent
+	uniqueId      string
 }
 
-func NewServer(config util.Config, store db.Store) (*Server, error) {
+func NewServer(config util.Config, store db.Store, redisClient *redis.Client) (*Server, error) {
 	paestoVerifier, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initiate paseto verifier: %d", err)
@@ -28,6 +32,9 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 		store:         store,
 		router:        app,
 		TokenVerifier: paestoVerifier,
+		redisClient:   redisClient,
+		PostsChan:     make(chan *PostEvent),
+		uniqueId:      "550e8400-e29b-41d4-a716-446655440000",
 	}
 
 	server.SetupRoutes(app)
