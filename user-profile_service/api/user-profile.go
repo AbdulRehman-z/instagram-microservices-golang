@@ -1,8 +1,6 @@
 package api
 
 import (
-	"sync"
-
 	"github.com/AbdulRehman-z/instagram-microservices/user-profile_service/token"
 	"github.com/gofiber/fiber/v2"
 )
@@ -35,12 +33,12 @@ func (s *Server) UserProfile(ctx *fiber.Ctx) error {
 	// postsChan := make(chan []Post)
 	// accountChan := make(chan Account)
 	s.Publisher(uniqueId.String())
-	wg := sync.WaitGroup{}
+	// wg := sync.WaitGroup{}
 	// go GetFollowersAndFollowinCount(s, uniqueId.String(), &wg, totalFollowersChan, totalFollowingChan)
 	// go GetPostsAndPostsCount(s, uniqueId.String(), &wg, totalPostsChan, postsChan)
 	// go GetAccount(s, uniqueId.String(), &wg, accountChan)
-	wg.Add(5)
-	wg.Wait()
+	// wg.Add(5)
+	// wg.Wait()
 
 	profile := Profile{
 		// UserInfo:       <-accountChan,
