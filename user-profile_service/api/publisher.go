@@ -13,7 +13,6 @@ func (s *Server) Publisher(uniqueId string) error {
 	var (
 		USER_PROFILE_STREAM = "user_profile_stream"
 	)
-
 	res, err := s.redisClient.XAdd(context.Background(), &redis.XAddArgs{
 		Values: map[string]any{
 			"unique_id": uniqueId,
