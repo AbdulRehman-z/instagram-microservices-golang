@@ -21,7 +21,7 @@ WHERE comment_id = $1 AND user_unique_id = $2
 RETURNING *;
 
 -- name: GetPostLikesCount :one
-SELECT COUNT(*) FROM post_likes
+SELECT post_id,COUNT(*) FROM post_likes
 WHERE post_id = $1;
 
 -- name: GetPostLikes :many
@@ -32,7 +32,8 @@ LIMIT $2
 OFFSET $3;
 
 -- name: GetCommentLikesCount :one
-SELECT COUNT(*) FROM comment_likes
+SELECT comment_id, COUNT(*) 
+FROM comment_likes
 WHERE comment_id = $1;
 
 -- name: GetCommentLikes :many
