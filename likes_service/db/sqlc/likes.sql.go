@@ -49,15 +49,21 @@ func (q *Queries) GetCommentLikes(ctx context.Context, arg GetCommentLikesParams
 }
 
 const getCommentLikesCount = `-- name: GetCommentLikesCount :one
-SELECT COUNT(*) FROM comment_likes
+SELECT comment_id, COUNT(*) 
+FROM comment_likes
 WHERE comment_id = $1
 `
 
-func (q *Queries) GetCommentLikesCount(ctx context.Context, commentID int32) (int64, error) {
+type GetCommentLikesCountRow struct {
+	CommentID int32 `json:"comment_id"`
+	Count     int64 `json:"count"`
+}
+
+func (q *Queries) GetCommentLikesCount(ctx context.Context, commentID int32) (GetCommentLikesCountRow, error) {
 	row := q.db.QueryRowContext(ctx, getCommentLikesCount, commentID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var i GetCommentLikesCountRow
+	err := row.Scan(&i.CommentID, &i.Count)
+	return i, err
 }
 
 const getPostLikes = `-- name: GetPostLikes :many
@@ -98,15 +104,20 @@ func (q *Queries) GetPostLikes(ctx context.Context, arg GetPostLikesParams) ([]u
 }
 
 const getPostLikesCount = `-- name: GetPostLikesCount :one
-SELECT COUNT(*) FROM post_likes
+SELECT post_id,COUNT(*) FROM post_likes
 WHERE post_id = $1
 `
 
-func (q *Queries) GetPostLikesCount(ctx context.Context, postID int32) (int64, error) {
+type GetPostLikesCountRow struct {
+	PostID int32 `json:"post_id"`
+	Count  int64 `json:"count"`
+}
+
+func (q *Queries) GetPostLikesCount(ctx context.Context, postID int32) (GetPostLikesCountRow, error) {
 	row := q.db.QueryRowContext(ctx, getPostLikesCount, postID)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+	var i GetPostLikesCountRow
+	err := row.Scan(&i.PostID, &i.Count)
+	return i, err
 }
 
 const likeComment = `-- name: LikeComment :one

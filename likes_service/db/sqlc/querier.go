@@ -12,9 +12,9 @@ import (
 
 type Querier interface {
 	GetCommentLikes(ctx context.Context, arg GetCommentLikesParams) ([]uuid.UUID, error)
-	GetCommentLikesCount(ctx context.Context, commentID int32) (int64, error)
+	GetCommentLikesCount(ctx context.Context, commentID int32) (GetCommentLikesCountRow, error)
 	GetPostLikes(ctx context.Context, arg GetPostLikesParams) ([]uuid.UUID, error)
-	GetPostLikesCount(ctx context.Context, postID int32) (int64, error)
+	GetPostLikesCount(ctx context.Context, postID int32) (GetPostLikesCountRow, error)
 	LikeComment(ctx context.Context, arg LikeCommentParams) (CommentLike, error)
 	LikePost(ctx context.Context, arg LikePostParams) (PostLike, error)
 	UnlikeComment(ctx context.Context, arg UnlikeCommentParams) (CommentLike, error)
