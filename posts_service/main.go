@@ -42,7 +42,7 @@ func run(config *util.Config, store db.Store, redisClient *redis.Client) {
 	if err != nil {
 		log.Fatalf("failed to initiate server: %d", err)
 	}
-	go server.Listener()
+	go server.UserProfileListener()
 	go server.Publisher()
 	err = server.Start(config.LISTEN_ADDR)
 	if err != nil {
