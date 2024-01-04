@@ -31,6 +31,7 @@ func run(config *util.Config, redisClient redis.Client) {
 	}
 	go server.FollowersListener()
 	go server.PostsListener()
+	go server.AccountListener()
 	go server.Publisher(server.UniqueId)
 	err = server.Start(config.LISTEN_ADDR)
 	if err != nil {
