@@ -31,7 +31,7 @@ func (pe PostEvent) MarshalBinary() ([]byte, error) {
 }
 
 func (s *Server) Publisher() error {
-	// fmt.Println("|||||||||||------ POSTS PUBLISHER STARTED! |||||||||||------")
+	fmt.Println("|||||||||||------ POSTS PUBLISHER STARTED! |||||||||||------")
 	for posts := range s.PostsChan {
 		if err := publishPosts(s.redisClient, s.uniqueId, posts); err != nil {
 			fmt.Println("error publishing to stream: ", err)
