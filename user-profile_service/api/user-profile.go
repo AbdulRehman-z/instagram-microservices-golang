@@ -27,8 +27,8 @@ func (s *Server) UserProfile(ctx *fiber.Ctx) error {
 	payload := ctx.Locals(authorizationPayloadKey).(*token.Payload)
 	uniqueId := payload.UniqueId
 
-	totalFollowersChan := make(chan int32)
-	totalFollowingChan := make(chan int32)
+	// totalFollowersChan := make(chan int32)
+	// totalFollowingChan := make(chan int32)
 	// totalPostsChan := make(chan int32)
 	// postsChan := make(chan []Post)
 	// accountChan := make(chan Account)
@@ -40,15 +40,16 @@ func (s *Server) UserProfile(ctx *fiber.Ctx) error {
 	// wg.Add(5)
 	// wg.Wait()
 
-	profile := Profile{
-		// UserInfo:       <-accountChan,
-		TotlaFollowers: <-totalFollowersChan,
-		TotalFollowing: <-totalFollowingChan,
-		// TotalPosts:     <-totalPostsChan,
-		// Posts:          <-postsChan,
-	}
+	// profile := Profile{
+	// 	UserInfo:       <-accountChan,
+	// 	TotlaFollowers: <-totalFollowersChan,
+	// 	TotalFollowing: <-totalFollowingChan,
+	// 	TotalPosts:     <-totalPostsChan,
+	// 	Posts:          <-postsChan,
+	// }
 
-	return ctx.Status(fiber.StatusOK).JSON(profile)
+	// return ctx.Status(fiber.StatusOK).JSON(profile)
+	return nil
 }
 
 // func GetFollowersAndFollowinCount(s *Server, uniqueId string, wg *sync.WaitGroup, totalFollowersChan chan int32, totalFollowingChan chan int32) {
