@@ -5,16 +5,20 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/likes_service/token"
 	"github.com/AbdulRehman-z/instagram-microservices/likes_service/util"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
-	Config        util.Config
-	store         db.Store
-	TokenVerifier token.TokenVerifier
-	router        *fiber.App
+	Config           util.Config
+	store            db.Store
+	TokenVerifier    token.TokenVerifier
+	router           *fiber.App
+	redisClient      *redis.Client
+	postlikesChan    chan []PostLikes
+	commentlikesChan chan []CommentLikes
 }
 
-func NewServer(config util.Config, store db.Store) (*Server, error) {
+func NewServer(config util.Config, store db.Store, redisCliet *redis.Client) (*Server, error) {
 	tokenVerifier, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
 	if err != nil {
 		return nil, err
@@ -23,10 +27,12 @@ func NewServer(config util.Config, store db.Store) (*Server, error) {
 	app := fiber.New()
 
 	return &Server{
-		Config:        config,
-		store:         store,
-		router:        app,
-		TokenVerifier: tokenVerifier,
+		Config:           config,
+		store:            store,
+		router:           app,
+		TokenVerifier:    tokenVerifier,
+		redisClient:      redisCliet,
+		commentlikesChan: make(chan []CommentLikes),
 	}, nil
 }
 
