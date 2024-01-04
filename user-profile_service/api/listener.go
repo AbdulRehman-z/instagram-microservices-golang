@@ -25,7 +25,7 @@ func (s *Server) FollowersListener() error {
 
 		for _, stream := range streams {
 			for _, message := range stream.Messages {
-				fmt.Println("message: ", message)
+				fmt.Println("message values: \n", message.Values)
 			}
 		}
 	}
@@ -48,7 +48,30 @@ func (s *Server) PostsListener() error {
 
 		for _, stream := range streams {
 			for _, message := range stream.Messages {
-				log.Println("message: ", message)
+				log.Println("message values: \n", message.Values)
+			}
+		}
+	}
+}
+
+func (s *Server) AccountListener() {
+	fmt.Println("|||||||||||||------- ACCOUNTS LISTENER STARTED! -------||||||||||||||")
+	var (
+		ACCOUNT_STREAM = "account_stream"
+	)
+
+	for {
+		streams, err := s.redisClient.XRead(context.Background(), &redis.XReadArgs{
+			Streams: []string{ACCOUNT_STREAM, "$"},
+			Block:   0,
+		}).Result()
+		if err != nil {
+			log.Printf("err reading from stream:%s || err: %s\n", ACCOUNT_STREAM, err)
+		}
+
+		for _, stream := range streams {
+			for _, message := range stream.Messages {
+				log.Println("message values: \n", message.Values)
 			}
 		}
 	}
