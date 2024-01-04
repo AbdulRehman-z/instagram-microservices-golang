@@ -8,10 +8,12 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
-func (s *Server) Listener() {
+func (s *Server) UserProfileListener() {
+	fmt.Println("|||||||||||------ USER-PROFILE LISTENER STARTED! |||||||||||------")
 	var (
 		USER_PROFILE_STREAM = "user_profile_stream"
 	)
+
 	for {
 		streams, err := s.redisClient.XRead(context.Background(), &redis.XReadArgs{
 			Streams: []string{USER_PROFILE_STREAM, "$"},
@@ -20,7 +22,6 @@ func (s *Server) Listener() {
 		if err != nil {
 			log.Printf("err reading from stream: %s || error: %s\n", USER_PROFILE_STREAM, err)
 		}
-		fmt.Println("|||||||||||------ POSTS LISTENER STARTED! |||||||||||------")
 
 		for _, stream := range streams {
 			fmt.Println("stream: ", stream)
