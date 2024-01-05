@@ -16,8 +16,10 @@ type Server struct {
 	router        *fiber.App
 	TokenVerifier token.TokenVerifier
 	redisClient   *redis.Client
-	PostsChan     chan *PostEvent
 	uniqueId      string
+
+	postsChan    chan *PostEvent
+	postsIdsChan chan []int32
 }
 
 func NewServer(config util.Config, store db.Store, redisClient *redis.Client) (*Server, error) {
@@ -33,7 +35,8 @@ func NewServer(config util.Config, store db.Store, redisClient *redis.Client) (*
 		router:        app,
 		TokenVerifier: paestoVerifier,
 		redisClient:   redisClient,
-		PostsChan:     make(chan *PostEvent),
+		postsChan:     make(chan *PostEvent),
+		postsIdsChan:  make(chan []int32),
 		uniqueId:      "550e8400-e29b-41d4-a716-446655440000",
 	}
 
