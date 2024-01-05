@@ -5,27 +5,33 @@ import (
 	"github.com/AbdulRehman-z/instagram-microservices/comments_service/token"
 	"github.com/AbdulRehman-z/instagram-microservices/comments_service/util"
 	"github.com/gofiber/fiber/v2"
+	"github.com/redis/go-redis/v9"
 )
 
 type Server struct {
-	Config        util.Config
-	router        *fiber.App
-	store         db.Store
-	tokenVerifier token.TokenVerifier
+	Config            *util.Config
+	router            *fiber.App
+	store             db.Store
+	tokenVerifier     token.TokenVerifier
+	redisClient       *redis.Client
+	commentsCountChan chan []CommentsCount
+	commentsIds       chan []int32
 }
 
-func NewServer(config util.Config, store db.Store) (*Server, error) {
-
+func NewServer(config *util.Config, store db.Store, redisClient *redis.Client) (*Server, error) {
 	tokenVerifier, err := token.NewPaestoMaker(config.SYMMETRIC_KEY)
 	if err != nil {
 		return nil, err
 	}
 
 	return &Server{
-		Config:        config,
-		router:        fiber.New(),
-		store:         store,
-		tokenVerifier: tokenVerifier,
+		Config:            config,
+		router:            fiber.New(),
+		store:             store,
+		tokenVerifier:     tokenVerifier,
+		redisClient:       redisClient,
+		commentsCountChan: make(chan []CommentsCount),
+		commentsIds:       make(chan []int32),
 	}, nil
 }
 
