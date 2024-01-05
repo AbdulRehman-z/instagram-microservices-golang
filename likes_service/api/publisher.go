@@ -9,13 +9,13 @@ import (
 
 func (s *Server) PostsLikesPublisher() {
 	var (
-		POST_LIKES_STREAM = "post_likes_stream"
+		LIKES_POSTS_STREAM = "likes:posts"
 	)
 
 	for {
 		likes := <-s.postlikesChan
 		if err := s.redisClient.XAdd(context.Background(), &redis.XAddArgs{
-			Stream: POST_LIKES_STREAM,
+			Stream: LIKES_POSTS_STREAM,
 			Values: map[string]interface{}{
 				"post_likes": likes,
 			},
@@ -28,13 +28,13 @@ func (s *Server) PostsLikesPublisher() {
 
 func (s *Server) CommentsLikesPublisher() {
 	var (
-		COMMENT_LIKES_STREAM = "comment_likes_stream"
+		LIKES_COMMENTS_STREAM = "likes:comments"
 	)
 
 	for {
 		likes := <-s.commentlikesChan
 		if err := s.redisClient.XAdd(context.Background(), &redis.XAddArgs{
-			Stream: COMMENT_LIKES_STREAM,
+			Stream: LIKES_COMMENTS_STREAM,
 			Values: map[string]interface{}{
 				"comment_likes": likes,
 			},
