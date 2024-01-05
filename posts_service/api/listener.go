@@ -8,6 +8,10 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+// /////////////////////////////////////////////////
+// /////////////////////////////////////////////////
+// /////////////////////////////////////////////////
+// /////////------- USER-PROFILE LISTENER /////////////-------
 func (s *Server) UserProfileListener() {
 	fmt.Println("|||||||||||------ USER-PROFILE LISTENER STARTED! |||||||||||------")
 	var (
@@ -56,5 +60,72 @@ func getPostsAndTotalPostsCount(s *Server) {
 		TotalPosts: 782,
 		Posts:      posts,
 	}
-	s.PostsChan <- event
+	s.postsChan <- event
+}
+
+// //////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////
+// //////////////////////////////////////////////////////
+// /////////------- POSTS-COMMENTS-COUNT LISTENER /////////////-------
+func (s *Server) PostsCommentsCountListener() {
+	fmt.Println("|||||||||||------ POSTS-COMMENTS-COUNT LISTENER STARTED! |||||||||||------")
+	var (
+		COMMENTS_COUNT_STREAM = "comments:count"
+	)
+
+	type CommentsCount struct {
+		POST_ID  int32
+		Comments int64
+	}
+
+	for {
+		streams, err := s.redisClient.XRead(context.Background(), &redis.XReadArgs{
+			Streams: []string{COMMENTS_COUNT_STREAM, "$"},
+			Block:   0,
+		}).Result()
+		if err != nil {
+			log.Printf("err reading from stream: %s || error: %s\n", COMMENTS_COUNT_STREAM, err)
+		}
+
+		for _, stream := range streams {
+			for _, message := range stream.Messages {
+				commentsCount := message.Values["comments_count"].([]CommentsCount)
+				log.Printf("listened event from stream: %s || event: %d\n", COMMENTS_COUNT_STREAM, commentsCount)
+			}
+		}
+	}
+}
+
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////
+///////////------- POSTS-LIKES-COUNT LISTENER /////////////-------
+
+func (s *Server) PostsLikesListener() {
+	fmt.Println("|||||||||||------ POSTS-LIKES LISTENER STARTED! |||||||||||------")
+	var (
+		POST_LIKES_STREAM = "posts:likes"
+	)
+
+	type PostLikes struct {
+		Post_id int32
+		Likes   int64
+	}
+
+	for {
+		streams, err := s.redisClient.XRead(context.Background(), &redis.XReadArgs{
+			Streams: []string{POST_LIKES_STREAM, "$"},
+			Block:   0,
+		}).Result()
+		if err != nil {
+			log.Printf("err reading from stream: %s || error: %s\n", POST_LIKES_STREAM, err)
+		}
+
+		for _, stream := range streams {
+			for _, message := range stream.Messages {
+				postLikes := message.Values["post_likes"].([]PostLikes)
+				log.Printf("listened event from stream: %s || event: %d\n", POST_LIKES_STREAM, postLikes)
+			}
+		}
+	}
 }
