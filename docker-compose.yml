@@ -1,332 +1,281 @@
-# version: '3'
-
-# services:
-
-#   redis:
-#     image: redis:7.2.2-alpine
-#     ports:
-#       - "6379:6379"
-#     restart: always
-  
-#   nginx:
-#     depends_on:
-#       - auth
-#     # restart: always
-#     build:
-#       context: ./nginx
-#       dockerfile: Dockerfile
-#     ports:
-#       - '8080:80'   
-  
-#   #### The Auth Service ####
-#   auth:
-#     build: 
-#       context: ./auth_service
-#       dockerfile: Dockerfile
-#     ports:
-#       - "5000:5000"
-#     restart: on-failure 
-#     environment:
-#       REDIS_HOST: "redis"
-#       REDIS_PORT: "6379"
-#       DB_DRIVER: "postgres"
-#       DB_URL: "postgres://postgres:password@auth_db:5432/auth?sslmode=disable"  
-#     depends_on:
-#       auth_db:
-#         condition: service_healthy
-#         restart: true
-#       redis:
-#         condition: service_started
-#     entrypoint: ["/app/main"]
-   
-#   auth_db:
-#     image: postgres:alpine3.18
-#     ports:
-#       - "5432:5432"
-#     restart: always  
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U postgres"]
-#       interval: 2s
-#       timeout: 1s
-#       retries: 2
-#     environment:
-#        POSTGRES_USER: postgres
-#        POSTGRES_PASSWORD: password
-#        POSTGRES_DB: auth
-
-
-#   ### The User Profile Service ###
-#   create-account:
-#     build:
-#       context: ./create-account_service
-#       dockerfile: Dockerfile
-#     ports:
-#       - "5001:5001"
-#     restart: always
-#     environment:
-#         REDIS_HOST: "redis"
-#         REDIS_PORT: "6379"
-#         DB_DRIVER: "postgres"
-#         DB_URL: "postgres://postgres:password@create-account_db:5432/create-account?sslmode=disable"
-#     depends_on:
-#       create-account_db:
-#         condition: service_healthy
-#         restart: true
-#       redis:
-#         condition: service_started
-#     entrypoint: ["/app/main"]     
-
-#   create-account_db:
-#     image: postgres:alpine3.18
-#     ports:
-#       - "5432:5432"
-#     restart: always
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U postgres"]
-#       interval: 2s
-#       timeout: 1s
-#       retries: 2
-#     environment:
-#        POSTGRES_USER: postgres
-#        POSTGRES_PASSWORD: postgres
-#        POSTGRES_DB: create-account_db
-
-#   ### The User Profile Service ###
-#   user-profile:
-#     build:
-#       context: ./user-profile_service
-#       dockerfile: Dockerfile
-#     ports:
-#       - "5002:5002"
-#     restart: always
-#     environment:
-#       REDIS_HOST: "redis"
-#       REDIS_PORT: "6379"
-#       DB_DRIVER: "postgres"
-#       DB_URL: "postgres://postgres:password@user-profile_db:5432/user-profile?sslmode=disable"
-#     depends_on:
-#        user-profile_db:
-#           condition: service_healthy
-#           restart: true
-#        redis:
-#           condition: service_started  
-#     entrypoint: ["/app/main"]      
-
-#   user-profile_db:
-#     image: postgres:alpine3.18
-#     ports:
-#       - "5432:5432"
-#     restart: always
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -u postgres"]
-#       interval: 2s
-#       timeout: 1s
-#       retries: 2
-#     environment:
-#        POSTGRES_USER: postgres
-#        POSTGRES_PASSWORD: postgres
-#        POSTGRES_DB: user-profile_db
-
-#   # ### The Comments Service ###
-#   # comments_service:
-#   #   build: ../comments_service/Dockerfile
-#   #   ports:
-#   #     - "5002:5002"
-#   #   restart: always
-#   #   depends_on:
-#   #     - comments_service_db
-#   #   environment:
-#   #      DSN: "host=comments_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5" 
-
-#   # comments_service_db:
-#   #   image: postgres:alpine3.18
-#   #   ports:
-#   #     - "5432:5432"
-#   #   restart: always
-#   #   environment:
-#   #      POSTGRES_USER: postgres
-#   #      POSTGRES_PASSWORD: postgres
-#   #      POSTGRES_DB: comments_service_db 
-
-#   ### The Posts Service ###
-#   posts:
-#     build:
-#       context: ./posts_service
-#       dockerfile: Dockerfile
-#     ports:
-#       - "5003:5003"
-#     restart: always
-#     environment:
-#       REDIS_HOST: "redis"
-#       REDIS_PORT: "6379"
-#       DB_DRIVER: "postgres"
-#       DB_URL: "postgres://postgres:password@posts_db:5432/posts?sslmode=disable"
-#     depends_on:
-#       posts_db:
-#         condition: service_healthy
-#         restart: true
-#       redis:
-#         condition: service_started  
-#     entrypoint: ["/app/main"]      
-
-
-#   posts_db:
-#     image: postgres:alpine3.18
-#     ports:
-#       - "5432:5432"
-#     restart: always
-#     environment:
-#        POSTGRES_USER: postgres
-#        POSTGRES_PASSWORD: postgres
-#        POSTGRES_DB: posts_db
-#     healthcheck: 
-#       test: ["CMD-SHELL","pg_isready -U postgres"]
-#       interval: 2s
-#       timeout: 1s
-#       retries: 2   
-
-#   # ### The Like's Service ###
-#   likes_service:
-#     build:
-#       context: ./likes_service
-#       dockerfile: Dockerfile
-#     ports:
-#       - "5005:5005"
-#     restart: always
-#     environment:
-#         REDIS_HOST: "redis"
-#         REDIS_PORT: "6379"
-#         DB_DRIVER: "postgres"
-#         DB_URL: "postgres://postgres:password@likes_service_db:5432/likes?sslmode=disable"
-#     depends_on:
-#       likes_service_db:
-#         condition: service_healthy
-#         restart: true
-#       redis:
-#         condition: service_started
-#     entrypoint: ["/app/main"]    
-
-#   likes_service_db:
-#     image: postgres:alpine3.18
-#     ports:
-#       - "5432:5432"
-#     restart: always        
-#     environment:
-#        POSTGRES_USER: postgres
-#        POSTGRES_PASSWORD: postgres
-#        POSTGRES_DB: likes_service_db
-#     healthcheck:
-#       test: ["CMD-SHELL", "pg_isready -U postgres"]
-#       interval: 2s
-#       timeout: 1s
-#       retries: 2
-
-#   ### The Follow's Service ###
-#   followers:
-#     build:
-#       context: ./followers_service
-#     ports:
-#       - "5004:5004"
-#     restart: always
-#     environment:
-#       REDIS_HOST: "redis"
-#       REDIS_PORT: "6379"
-#       DB_DRIVER: "postgres"
-#       DB_URL: "postgres://postgres:password@followers_db:5432/followers_db@sslmode=disable"
-#     depends_on:
-#       followers_db:
-#         condition: service_healthy
-#         restart: true
-#       redis:
-#         condition: service_started    
-#     entrypoint: ["/app/main"]      
-    
-#   followers_db:
-#     image: postgres:alpine3.18
-#     ports:
-#       - "5432:5432"
-#     restart: always
-#     environment:
-#        POSTGRES_USER: postgres
-#        POSTGRES_PASSWORD: postgres
-#        POSTGRES_DB: followers_db
-#     healthcheck:  
-#       test: ["CMD-SHELL","pg_isready -U postgres"]
-#       interval: 2s
-#       timeout: 1s
-#       retries: 2   
-
-#   # ### The notification's Service ###
-#   # notifications_service:
-#   #   build: ../notifications_service/Dockerfile
-#   #   ports:
-#   #     - "5006:5006"
-#   #   restart: always
-#   #   depends_on:
-#   #     - notifications_service_db
-#   #   environment:
-#   #      DSN: "host=notifications_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
-
-#   # notifications_service_db:
-#   #    build: ../notifications_service/Dockerfile
-#   #    ports:
-#   #     - "5432:5432"
-#   #    restart: always
-#   #    environment:
-#   #     POSTGRES_USER: postgres
-#   #     POSTGRES_PASSWORD: postgres
-#   #     POSTGRES_DB: notifications_service_db
-
-
-
-
 version: '3'
 
 services:
-   postgres:
-    image: postgres:16.1-alpine3.19
-    ports:
-      - "5432:5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: followers  
 
-   redis:
-    image: redis:7.2.3-alpine
+  redis:
+    image: redis:7.2.2-alpine
     ports:
       - "6379:6379"
+    restart: always
+  
+  nginx:
+    depends_on:
+      - auth
+    # restart: always
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    ports:
+      - '8080:80'   
+  
+  #### The Auth Service ####
+  auth:
+    build: 
+      context: ./auth_service
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    restart: on-failure 
     environment:
       REDIS_HOST: "redis"
-      REDIS_PORT: "6379"  
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@auth_db:5432/auth?sslmode=disable"  
+    depends_on:
+      auth_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    entrypoint: ["/app/main"]
+   
+  auth_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always  
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: password
+       POSTGRES_DB: auth
 
 
+  ### The User Profile Service ###
+  create-account:
+    build:
+      context: ./create-account_service
+      dockerfile: Dockerfile
+    ports:
+      - "5001:5001"
+    restart: always
+    environment:
+        REDIS_HOST: "redis"
+        REDIS_PORT: "6379"
+        DB_DRIVER: "postgres"
+        DB_URL: "postgres://postgres:password@create-account_db:5432/create-account?sslmode=disable"
+    depends_on:
+      create-account_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    entrypoint: ["/app/main"]     
+
+  create-account_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: create-account_db
+
+  ### The User Profile Service ###
+  user-profile:
+    build:
+      context: ./user-profile_service
+      dockerfile: Dockerfile
+    ports:
+      - "5002:5002"
+    restart: always
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@user-profile_db:5432/user-profile?sslmode=disable"
+    depends_on:
+       user-profile_db:
+          condition: service_healthy
+          restart: true
+       redis:
+          condition: service_started  
+    entrypoint: ["/app/main"]      
+
+  user-profile_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -u postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: user-profile_db
+
+  ### The Comments Service ###
+  comments:
+    build: ../comments/Dockerfile
+    ports:
+      - "5006:5006"
+    restart: always
+    depends_on:
+      - comments_db
+    environment:
+       DSN: "host=comments_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5" 
+
+  comments_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: comments_db 
+
+  ### The Posts Service ###
+  posts:
+    build:
+      context: ./posts_service
+      dockerfile: Dockerfile
+    ports:
+      - "5003:5003"
+    restart: always
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@posts_db:5432/posts?sslmode=disable"
+    depends_on:
+      posts_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started  
+    entrypoint: ["/app/main"]      
 
 
+  posts_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: posts_db
+    healthcheck: 
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2   
 
+  # ### The Like's Service ###
+  likes_service:
+    build:
+      context: ./likes_service
+      dockerfile: Dockerfile
+    ports:
+      - "5005:5005"
+    restart: always
+    environment:
+        REDIS_HOST: "redis"
+        REDIS_PORT: "6379"
+        DB_DRIVER: "postgres"
+        DB_URL: "postgres://postgres:password@likes_service_db:5432/likes?sslmode=disable"
+    depends_on:
+      likes_service_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started
+    entrypoint: ["/app/main"]    
 
+  likes_service_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always        
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: likes_service_db
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2
 
+  ### The Follow's Service ###
+  followers:
+    build:
+      context: ./followers_service
+    ports:
+      - "5004:5004"
+    restart: always
+    environment:
+      REDIS_HOST: "redis"
+      REDIS_PORT: "6379"
+      DB_DRIVER: "postgres"
+      DB_URL: "postgres://postgres:password@followers_db:5432/followers_db@sslmode=disable"
+    depends_on:
+      followers_db:
+        condition: service_healthy
+        restart: true
+      redis:
+        condition: service_started    
+    entrypoint: ["/app/main"]      
+    
+  followers_db:
+    image: postgres:alpine3.18
+    ports:
+      - "5432:5432"
+    restart: always
+    environment:
+       POSTGRES_USER: postgres
+       POSTGRES_PASSWORD: postgres
+       POSTGRES_DB: followers_db
+    healthcheck:  
+      test: ["CMD-SHELL","pg_isready -U postgres"]
+      interval: 2s
+      timeout: 1s
+      retries: 2   
 
+  # ### The notification's Service ###
+  # notifications_service:
+  #   build: ../notifications_service/Dockerfile
+  #   ports:
+  #     - "5006:5006"
+  #   restart: always
+  #   depends_on:
+  #     - notifications_service_db
+  #   environment:
+  #      DSN: "host=notifications_service_db port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  # notifications_service_db:
+  #    build: ../notifications_service/Dockerfile
+  #    ports:
+  #     - "5432:5432"
+  #    restart: always
+  #    environment:
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #     POSTGRES_DB: notifications_service_db
 
 
 
