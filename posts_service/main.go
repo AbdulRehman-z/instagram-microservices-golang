@@ -25,7 +25,7 @@ func main() {
 		log.Printf("Cannot ping DB: %v", err)
 	}
 
-	// util.RunMigration(config.DB_MIGRATION_URL, config.DB_URL)
+	util.RunMigration(config.DB_MIGRATION_URL, config.DB_URL)
 
 	redisClient := redis.NewClient(&redis.Options{
 		Addr:     config.REDIS_ADDR,
