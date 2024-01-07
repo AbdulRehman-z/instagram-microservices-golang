@@ -2,10 +2,6 @@
 
 This is a sample project to demonstrate how to build a project using microservices architecture. In this project i use Golang as the main programming language and PostgreSQL as the main database. I also use Docker and Docker Compose to run the services. Redis-stream is used as the message broker. Nginx is used as the API Gateway and Reverse Proxy. SMTP is used to send email for user verification.
 
-## Architecture
-
-![Architecture](
-
 ## Technologies
 
 - [Golang](https://golang.org/)
