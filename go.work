@@ -5,9 +5,7 @@ use (
 	./comments_service
 	./followers_service
 	./likes_service
-	./notifications_service
 	./posts_service
 	./user-profile_service
-	./feed_service
 	./create-account_service
 )
