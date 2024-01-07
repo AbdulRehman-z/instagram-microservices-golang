@@ -10,16 +10,15 @@ import (
 )
 
 type Server struct {
-	Config        util.Config
-	redisClient   redis.Client
-	router        *fiber.App
-	tokenVerifier token.TokenVerifier
-	UniqueId      string
-	// totalFollowersChan chan int64
-	// totalFollowingChan chan int64
-	// totalPostsChan     chan int64
-	// postsChan          chan []Post
-	// accountChan        chan Account
+	Config                          util.Config
+	redisClient                     redis.Client
+	router                          *fiber.App
+	tokenVerifier                   token.TokenVerifier
+	UniqueId                        string
+	totalFollowingsAndFollowersChan chan string
+	totalPostsChan                  chan int64
+	postsChan                       chan []Post
+	accountChan                     chan Account
 }
 
 func NewServer(config util.Config, redisClient redis.Client) (*Server, error) {
